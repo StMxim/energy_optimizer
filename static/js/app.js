@@ -285,8 +285,27 @@ document.addEventListener('DOMContentLoaded', function() {
       const tempDiv = document.createElement('div');
       tempDiv.innerHTML = html;
       
-      // Extract the main content (we want to skip the header, navigation, etc.)
-      // This extracts content from the main section of help.html
+      // Extract styles from the help page
+      const styleElements = tempDiv.querySelectorAll('style');
+      let stylesContent = '';
+      
+      for (const styleElement of styleElements) {
+        stylesContent += styleElement.outerHTML;
+      }
+      
+      // Also extract any link elements for external stylesheets
+      const linkElements = tempDiv.querySelectorAll('link[rel="stylesheet"]');
+      let linkContent = '';
+      
+      for (const linkElement of linkElements) {
+        // Only add links that aren't already in the main document
+        const href = linkElement.getAttribute('href');
+        if (href && !document.querySelector(`link[href="${href}"]`)) {
+          linkContent += linkElement.outerHTML;
+        }
+      }
+      
+      // Extract the main content
       let helpContent = '';
       const mainElement = tempDiv.querySelector('main');
       
@@ -318,8 +337,8 @@ document.addEventListener('DOMContentLoaded', function() {
         }
       }
       
-      // Set the help content
-      helpContentContainer.innerHTML = helpContent;
+      // Inject styles and content
+      helpContentContainer.innerHTML = stylesContent + linkContent + helpContent;
       
       // Initialize any help page specific scripts or behaviors
       initHelpPageBehavior();
