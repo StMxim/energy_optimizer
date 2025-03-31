@@ -998,29 +998,27 @@ footer {
 @media (max-width: 992px) {
   .burger-menu {
     display: flex;
-    align-items: center;
   }
 
   header .container {
-    flex-direction: row;
     justify-content: space-between;
-    padding: 0 20px;
-    align-items: center;
+    padding: 0 24px;
+    position: relative;
   }
 
   nav {
     position: fixed;
     top: 0;
-    right: -300px;
-    width: 280px;
+    right: -100%;
+    width: 85%;
+    max-width: 320px;
     height: 100vh;
-    background-color: var(--background-color);
-    box-shadow: -5px 0 15px rgba(0, 0, 0, 0.1);
-    transition: var(--transition-smooth);
-    padding: 80px 20px 20px;
+    background-color: white;
+    box-shadow: -10px 0px 30px rgba(0, 0, 0, 0.1);
     z-index: 100;
+    padding: 30px;
+    transition: all 0.3s ease;
     overflow-y: auto;
-    margin-left: 0;
   }
 
   nav.active {
@@ -1029,47 +1027,40 @@ footer {
 
   nav ul {
     flex-direction: column;
-    gap: 15px;
   }
 
   nav ul li {
-    margin-left: 0 !important;
-    width: 100%;
+    margin: 0;
+    margin-bottom: 16px;
   }
 
   nav ul li a {
+    padding: 12px 15px;
     width: 100%;
-    display: flex;
-    align-items: center;
-    padding: 12px 20px;
+    justify-content: flex-start;
   }
 
   nav ul li a i {
-    margin-right: 12px;
-    font-size: 1.2rem;
+    margin-right: 15px;
   }
 
   .tab-container {
     overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
-    scrollbar-width: none;
-    padding: 0;
+    border-radius: var(--border-radius);
+    white-space: nowrap;
   }
 
   .tab-container::-webkit-scrollbar {
-    display: none;
+    height: 0px;
   }
 
   .tabs {
-    display: flex;
-    white-space: nowrap;
-    padding: 0;
-    min-width: 100%;
+    flex-wrap: nowrap;
+    width: 100%;
   }
 
   .tabs li {
     flex: 0 0 auto;
-    margin-right: 0;
   }
 
   .tabs li a {
@@ -1084,8 +1075,37 @@ footer {
   .tabs li:nth-child(3) a {
     border-radius: 0;
   }
+  
+  .tabs li:nth-child(4) a {
+    border-radius: 0 var(--border-radius) var(--border-radius) 0;
+  }
 
+}
 
+/* Стили для страницы Help */
+#help-tab .card {
+  background-color: transparent;
+  box-shadow: none;
+}
+
+#help-tab .card-header {
+  background-color: var(--background-color);
+  box-shadow: var(--shadow-card);
+  border-radius: var(--border-radius) var(--border-radius) 0 0;
+  margin-bottom: 20px;
+}
+
+#help-tab .card-body {
+  background-color: transparent;
+  padding: 0;
+}
+
+/* Сохраняем белую подложку для элементов внутри help-content */
+#help-tab .feature-card,
+#help-tab .accordion,
+#help-tab .color-legend {
+  background-color: var(--background-color);
+  box-shadow: var(--shadow-card);
 }
 
 @media (max-width: 768px) {
