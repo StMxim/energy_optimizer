@@ -24,7 +24,7 @@ class SecurityHeadersMiddleware(BaseHTTPMiddleware):
         # Устанавливаем политику доступа к документу
         response.headers["Cross-Origin-Opener-Policy"] = "unsafe-none"
         # Разрешаем выполнение скриптов с других источников
-        response.headers["Content-Security-Policy"] = "frame-ancestors *"
+        response.headers["Content-Security-Policy"] = "frame-ancestors https: http: ws: wss: data: blob: file:"
         return response
 
 @asynccontextmanager
