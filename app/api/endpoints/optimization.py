@@ -72,9 +72,14 @@ async def optimize_cycles(
     try:
         # If dates are not specified, use the last 30 days
         if not start_date:
-            end_date = datetime.now().replace(hour=0, minute=0, second=0, microsecond=0)
-            start_date = end_date - timedelta(days=30)
+            current_date = datetime.now()
+            # Получаем последний день предыдущего месяца (конец периода по умолчанию)
+            end_date = current_date.replace(day=1) - timedelta(days=1)
+            # Получаем первый день предыдущего месяца (начало периода по умолчанию)
+            start_date = end_date.replace(day=1)
+            logger.info(f"Using default date range: {start_date} to {end_date}")
         elif not end_date:
+            # Если указана только начальная дата, берем 30 дней начиная с нее
             end_date = start_date + timedelta(days=30)
         
         logger.info(f"Optimization request from {start_date} to {end_date}, threshold: {threshold}")
@@ -163,9 +168,14 @@ async def optimize_cycles_csv(
     try:
         # If dates are not specified, use the last 30 days
         if not start_date:
-            end_date = datetime.now().replace(hour=0, minute=0, second=0, microsecond=0)
-            start_date = end_date - timedelta(days=30)
+            current_date = datetime.now()
+            # Получаем последний день предыдущего месяца (конец периода по умолчанию)
+            end_date = current_date.replace(day=1) - timedelta(days=1)
+            # Получаем первый день предыдущего месяца (начало периода по умолчанию)
+            start_date = end_date.replace(day=1)
+            logger.info(f"Using default date range: {start_date} to {end_date}")
         elif not end_date:
+            # Если указана только начальная дата, берем 30 дней начиная с нее
             end_date = start_date + timedelta(days=30)
         
         logger.info(f"CSV optimization request from {start_date} to {end_date}, threshold: {threshold}")

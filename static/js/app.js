@@ -168,9 +168,14 @@ document.addEventListener('DOMContentLoaded', function() {
   }
   
   function setDefaultDates() {
+    // Get current date
     const today = new Date();
-    const lastWeek = new Date();
-    lastWeek.setDate(today.getDate() - 7);
+    
+    // Calculate first day of previous month
+    const firstDayPrevMonth = new Date(today.getFullYear(), today.getMonth() - 1, 1);
+    
+    // Calculate last day of previous month
+    const lastDayPrevMonth = new Date(today.getFullYear(), today.getMonth(), 0);
     
     // Format dates for date input
     const formatDate = (date) => {
@@ -185,11 +190,11 @@ document.addEventListener('DOMContentLoaded', function() {
     const endDateInputs = document.querySelectorAll('input[name="end_date"]');
     
     for (const input of startDateInputs) {
-      input.value = formatDate(lastWeek);
+      input.value = formatDate(firstDayPrevMonth);
     }
     
     for (const input of endDateInputs) {
-      input.value = formatDate(today);
+      input.value = formatDate(lastDayPrevMonth);
     }
   }
   
@@ -435,18 +440,14 @@ document.addEventListener('DOMContentLoaded', function() {
       const endDate = formData.get('end_date');
       const threshold = formData.get('threshold') || 0;
       
-      // Call API for optimization using POST method (changed back from GET)
-      const response = await fetch(`/api/v1/optimization/optimize`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          start_date: `${startDate}T00:00:00`,
-          end_date: `${endDate}T23:59:59`,
-          threshold: Number.parseFloat(threshold)
-        })
+      // Call API for optimization using GET method with query parameters
+      const queryParams = new URLSearchParams({
+        start_date: `${startDate}T00:00:00`,
+        end_date: `${endDate}T23:59:59`,
+        threshold: threshold
       });
+      
+      const response = await fetch(`/api/v1/optimization/optimize?${queryParams.toString()}`);
       
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));

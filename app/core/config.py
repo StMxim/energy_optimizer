@@ -26,12 +26,15 @@ class Settings(BaseSettings):
     # Формат даты/времени для URL API (YYYY-MM-DDTHH:MM:SS)
     API_DATETIME_FORMAT: str = "%Y-%m-%dT%H:%M:%S"
     
+    # Уровень логирования
+    LOG_LEVEL: str = os.getenv("LOG_LEVEL", "INFO")
+    
     # Время жизни токена (в секундах) - используется для кеширования
     TOKEN_LIFETIME: int = 3500  # Обычно токены живут около часа, берем чуть меньше для запаса
     
     # Флаг, указывающий использовать ли тестовые данные по умолчанию 
     # из-за отсутствия настоящего API
-    USE_TEST_DATA_BY_DEFAULT: bool = os.getenv("USE_TEST_DATA_BY_DEFAULT", "False").lower() == "true"
+    USE_TEST_DATA_BY_DEFAULT: bool = False
     
     # CORS настройки
     BACKEND_CORS_ORIGINS: List[str] = ["*"]
