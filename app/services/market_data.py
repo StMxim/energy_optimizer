@@ -73,7 +73,7 @@ class MarketDataService:
             start_encoded = urllib.parse.quote(start_str)
             end_encoded = urllib.parse.quote(end_str)
             
-            url = f"{settings.MARKET_API_BASE_URL}/{start_encoded}/{end_encoded}"
+            url = f"{settings.MARKET_API_URL}/{start_encoded}/{end_encoded}"
             
             logger.info(f"Request to API: {url}")
             

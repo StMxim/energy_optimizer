@@ -1,0 +1,14 @@
+warning: LF will be replaced by CRLF in docker-compose.yml.
+The file will have its original line endings in your working directory
+[1mdiff --git a/docker-compose.yml b/docker-compose.yml[m
+[1mindex 8670568..902eae0 100644[m
+[1m--- a/docker-compose.yml[m
+[1m+++ b/docker-compose.yml[m
+[36m@@ -11,6 +11,6 @@[m [mservices:[m
+     environment:[m
+       - CLIENT_ID=${CLIENT_ID}[m
+       - CLIENT_SECRET=${CLIENT_SECRET}[m
+[31m-      - MARKET_API_BASE_URL=${MARKET_API_BASE_URL}[m
+[32m+[m[32m      - MARKET_API_URL=${MARKET_API_URL}[m
+       - LOG_LEVEL=INFO[m
+     restart: unless-stopped[m
