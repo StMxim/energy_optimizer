@@ -12,7 +12,7 @@ class Settings(BaseSettings):
     
     # Аутентификация для внешнего API
     CLIENT_ID: str = os.getenv("CLIENT_ID", "cm_app_ntp_id_1b3e94274c3d41f88944e01633640701")
-    CLIENT_SECRET: str = os.getenv("CLIENT_SECRET", "ntp_9CCzWONT5FWN3lvpNDu4")
+    CLIENT_SECRET: str = os.getenv("CLIENT_SECRET", "ntp_9CC2WONTSFwN3lvpNDu4")
     
     # URL для получения токена
     TOKEN_URL: str = os.getenv("TOKEN_URL", "https://identity.netztransparenz.de/users/connect/token")

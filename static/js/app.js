@@ -871,8 +871,8 @@ document.addEventListener('DOMContentLoaded', function() {
     // Add test data warning if applicable
     if (isTestData) {
       summaryHTML += `
-        <div class="alert alert-warning">
-          <i class="fas fa-info-circle"></i> ${testDataMessage || 'Using simulated data for demonstration'}
+        <div class="test-data-notice">
+          <i class="fas fa-info-circle"></i> API Error: ${testDataMessage || 'Using test data.'}
         </div>
       `;
     }
