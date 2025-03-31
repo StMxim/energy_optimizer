@@ -148,6 +148,130 @@ document.addEventListener('DOMContentLoaded', function() {
   function enhanceDateInputs() {
     const dateWrappers = document.querySelectorAll('.date-input-wrapper');
     
+    // Detect if running inside an iframe
+    const isInsideIframe = window !== window.parent;
+    
+    // Apply special handling for iframe environment
+    if (isInsideIframe) {
+      // Add CSS to ensure date pickers in iframe display correctly
+      const iframeStyles = document.createElement('style');
+      iframeStyles.textContent = `
+        /* Ensure date pickers in iframe show properly */
+        input[type="date"]::-webkit-calendar-picker-indicator {
+          position: absolute;
+          right: 5px;
+          z-index: 100;
+        }
+        
+        /* Ensure date picker popup appears in iframe */
+        ::-webkit-datetime-edit, ::-webkit-inner-spin-button {
+          z-index: 2000 !important;
+          opacity: 1 !important;
+        }
+        
+        /* Alternative date picker style for browsers that don't support showPicker() */
+        .date-input-wrapper {
+          position: relative;
+          display: inline-block;
+        }
+        
+        input[type="date"] {
+          appearance: none;
+          -webkit-appearance: none;
+          padding-right: 30px;
+          position: relative;
+          z-index: 1;
+        }
+      `;
+      document.head.appendChild(iframeStyles);
+
+      // Create alternative date input method for browsers that don't support showPicker()
+      const dateInputs = document.querySelectorAll('input[type="date"]');
+      for (const input of dateInputs) {
+        // Create wrapper for alternative text input
+        const altWrapper = document.createElement('div');
+        altWrapper.className = 'alt-date-wrapper';
+        altWrapper.style.position = 'relative';
+        
+        // Create alternative text input field
+        const altInput = document.createElement('input');
+        altInput.type = 'text';
+        altInput.placeholder = 'YYYY-MM-DD';
+        altInput.value = input.value;
+        altInput.className = input.className;
+        altInput.style.cursor = 'pointer';
+        
+        // Set up synchronization between inputs
+        altInput.addEventListener('change', () => {
+          if (isValidDateFormat(altInput.value)) {
+            input.value = altInput.value;
+          }
+        });
+        
+        input.addEventListener('change', () => {
+          altInput.value = input.value;
+        });
+        
+        // Create calendar icon
+        const calendarIcon = document.createElement('i');
+        calendarIcon.className = 'fas fa-calendar-alt';
+        calendarIcon.style.position = 'absolute';
+        calendarIcon.style.right = '10px';
+        calendarIcon.style.top = '50%';
+        calendarIcon.style.transform = 'translateY(-50%)';
+        calendarIcon.style.pointerEvents = 'none';
+        
+        // Add click handler to show date picker
+        altInput.addEventListener('click', () => {
+          // Try native date picker first
+          try {
+            input.showPicker();
+          } catch (e) {
+            // Fallback to focus (for older browsers)
+            input.focus();
+            // Toggle input visibility for browsers that show calendar on focus
+            const wasHidden = input.style.opacity === '0';
+            if (wasHidden) {
+              input.style.opacity = '1';
+              input.style.position = 'absolute';
+              input.style.top = '0';
+              input.style.left = '0';
+              input.style.width = '100%';
+              input.style.height = '100%';
+              
+              // Hide it again after selection
+              setTimeout(() => {
+                input.addEventListener('blur', function onBlur() {
+                  input.style.opacity = '0';
+                  input.removeEventListener('blur', onBlur);
+                });
+              }, 100);
+            } else {
+              input.style.opacity = '0';
+            }
+          }
+        });
+        
+        // Position the real date input over the alternative one but make it transparent
+        input.style.position = 'absolute';
+        input.style.top = '0';
+        input.style.left = '0';
+        input.style.width = '100%';
+        input.style.height = '100%';
+        input.style.opacity = '0';
+        input.style.zIndex = '2';
+        
+        // Add elements to the DOM
+        altWrapper.appendChild(altInput);
+        altWrapper.appendChild(calendarIcon);
+        altWrapper.appendChild(input);
+        
+        // Replace the original input with our enhanced version
+        input.parentNode.insertBefore(altWrapper, input.nextSibling);
+      }
+    }
+    
+    // For all environments (iframe or not)
     for (const wrapper of dateWrappers) {
       wrapper.addEventListener('click', function(e) {
         // Prevent default to stop any other event handlers
@@ -160,11 +284,22 @@ document.addEventListener('DOMContentLoaded', function() {
           // Focus on the input
           dateInput.focus();
           
-          // Open the date picker
-          dateInput.showPicker();
+          // Try to open the date picker
+          try {
+            dateInput.showPicker();
+          } catch (e) {
+            // Some browsers don't support showPicker(), just leave focused
+            console.log("Browser doesn't support showPicker(), using standard date input");
+          }
         }
       });
     }
+  }
+  
+  // Helper function to validate date format YYYY-MM-DD
+  function isValidDateFormat(dateStr) {
+    // Simple regex for YYYY-MM-DD format
+    return /^\d{4}-\d{2}-\d{2}$/.test(dateStr);
   }
   
   function setDefaultDates() {
