@@ -782,6 +782,16 @@ textarea:disabled {
   color: var(--accent);
   pointer-events: all;
   cursor: pointer;
+  font-size: 1.2rem;
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.date-icon i {
+  font-size: 1.1rem;
 }
 
 input[type="date"] {
@@ -824,6 +834,8 @@ input[type="date"]::-webkit-calendar-picker-indicator {
 /* Стили для кастомного календаря */
 .custom-calendar {
   font-size: 0.9rem;
+  z-index: 100;
+  min-width: 280px;
 }
 
 .custom-calendar .btn-small {

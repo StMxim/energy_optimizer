@@ -203,6 +203,7 @@ document.addEventListener('DOMContentLoaded', function() {
             calendar.style.borderRadius = '0.5rem';
             calendar.style.padding = '1rem';
             calendar.style.boxShadow = '0 4px 12px rgba(0, 0, 0, 0.15)';
+            calendar.style.width = '280px';
             
             // Add header with month/year selector
             const header = document.createElement('div');
@@ -210,19 +211,30 @@ document.addEventListener('DOMContentLoaded', function() {
             header.style.display = 'flex';
             header.style.justifyContent = 'space-between';
             header.style.marginBottom = '1rem';
+            header.style.alignItems = 'center';
             
             // Previous month button
             const prevBtn = document.createElement('button');
             prevBtn.innerHTML = '&laquo;';
             prevBtn.className = 'btn btn-small';
+            prevBtn.style.minWidth = '30px';
+            prevBtn.style.height = '30px';
+            prevBtn.style.padding = '0';
+            prevBtn.style.backgroundColor = 'var(--700)';
             
             // Month/Year display
             const monthYearDisplay = document.createElement('div');
+            monthYearDisplay.style.fontWeight = 'bold';
+            monthYearDisplay.style.fontSize = '1rem';
             
             // Next month button
             const nextBtn = document.createElement('button');
             nextBtn.innerHTML = '&raquo;';
             nextBtn.className = 'btn btn-small';
+            nextBtn.style.minWidth = '30px';
+            nextBtn.style.height = '30px';
+            nextBtn.style.padding = '0';
+            nextBtn.style.backgroundColor = 'var(--700)';
             
             header.appendChild(prevBtn);
             header.appendChild(monthYearDisplay);
@@ -279,6 +291,11 @@ document.addEventListener('DOMContentLoaded', function() {
                 dayElement.style.cursor = 'pointer';
                 dayElement.style.padding = '0.5rem';
                 dayElement.style.borderRadius = '0.25rem';
+                dayElement.style.width = '30px';
+                dayElement.style.height = '30px';
+                dayElement.style.display = 'flex';
+                dayElement.style.alignItems = 'center';
+                dayElement.style.justifyContent = 'center';
                 
                 // Check if this is the currently selected date
                 const currentDate = new Date(year, month, day);
@@ -287,6 +304,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     defaultDate.getDate() === day) {
                   dayElement.style.backgroundColor = 'var(--accent)';
                   dayElement.style.color = 'var(--900)';
+                  dayElement.style.fontWeight = 'bold';
                 } else {
                   dayElement.style.backgroundColor = 'var(--800)';
                 }
@@ -311,7 +329,11 @@ document.addEventListener('DOMContentLoaded', function() {
                 });
                 
                 // Click handler
-                dayElement.addEventListener('click', () => {
+                dayElement.addEventListener('click', (e) => {
+                  // Предотвращаем всплытие события и дефолтное поведение
+                  e.preventDefault();
+                  e.stopPropagation();
+                  
                   const selectedDate = new Date(year, month, day);
                   dateInput.value = formatDate(selectedDate);
                   defaultDate = selectedDate;
@@ -334,12 +356,20 @@ document.addEventListener('DOMContentLoaded', function() {
             renderCalendar(defaultDate.getFullYear(), defaultDate.getMonth());
             
             // Previous/Next month handlers
-            prevBtn.addEventListener('click', () => {
+            prevBtn.addEventListener('click', (e) => {
+              // Предотвращаем всплытие события и дефолтное поведение
+              e.preventDefault();
+              e.stopPropagation();
+              
               defaultDate.setMonth(defaultDate.getMonth() - 1);
               renderCalendar(defaultDate.getFullYear(), defaultDate.getMonth());
             });
             
-            nextBtn.addEventListener('click', () => {
+            nextBtn.addEventListener('click', (e) => {
+              // Предотвращаем всплытие события и дефолтное поведение
+              e.preventDefault();
+              e.stopPropagation();
+              
               defaultDate.setMonth(defaultDate.getMonth() + 1);
               renderCalendar(defaultDate.getFullYear(), defaultDate.getMonth());
             });
