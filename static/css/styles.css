@@ -109,7 +109,7 @@ p {
 
 /* Card styles */
 .card {
-  background-color: transparent;
+  background-color: var(--900);
   border-radius: var(--border-radius);
   margin-bottom: 2rem;
   border: 1px solid var(--border-color);
@@ -123,7 +123,7 @@ p {
 }
 
 .card-header {
-  background-color: var(--background-secondary);
+  background-color: var(--900);
   padding: 1.25rem 1.5rem;
   border-bottom: 1px solid var(--border-color);
   display: flex;
@@ -565,6 +565,7 @@ nav ul li a.active:hover::after {
 main {
   padding: 2rem 0;
   min-height: calc(100vh - 8.75rem);
+  background-color: var(--900);
 }
 
 .tab-container {
@@ -665,7 +666,7 @@ main {
 }
 
 .card {
-  background-color: var(--background-color);
+  background-color: var(--900);
   border-radius: var(--border-radius);
   box-shadow: none;
   margin-bottom: 1.75rem;
@@ -681,7 +682,7 @@ main {
 .card-header {
   padding: 1.25rem 1.5rem;
   border-bottom: 1px solid var(--border-color);
-  background-color: var(--background-color);
+  background-color: var(--900);
 }
 
 .card-header h2 {
