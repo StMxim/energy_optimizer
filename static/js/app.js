@@ -157,385 +157,358 @@ document.addEventListener('DOMContentLoaded', function() {
       container.appendChild(iconContainer);
       
       if (dateInput) {
-        // Check if browser supports native date picker
-        const isDateSupported = function() {
-          const input = document.createElement('input');
-          input.setAttribute('type', 'date');
-          const notADateValue = 'not-a-date';
-          input.setAttribute('value', notADateValue);
-          return input.value !== notADateValue;
-        }();
+        // Глобальная переменная для хранения всех открытых календарей
+        window.openCalendars = window.openCalendars || [];
         
-        // Check if we're in an iframe and if showPicker is supported
-        const isInIframe = window.self !== window.top;
-        const supportsNativePicker = dateInput.showPicker && typeof dateInput.showPicker === 'function';
-        const canUseNativePicker = isDateSupported && supportsNativePicker && !isInIframe;
-        
-        // Create simple date picker if native not available
-        if (!canUseNativePicker) {
-          // Создаем глобальные переменные для отслеживания календарей
-          // Глобальная переменная для хранения всех открытых календарей
-          window.openCalendars = window.openCalendars || [];
-          
-          // Функция для закрытия всех открытых календарей
-          const closeAllCalendars = () => {
-            while (window.openCalendars.length > 0) {
-              const calObj = window.openCalendars.pop();
-              // Удаляем календарь из DOM
-              if (calObj.calendar) {
-                if (calObj.calendar.parentNode) {
-                  calObj.calendar.parentNode.removeChild(calObj.calendar);
-                } else {
-                  // Если родителя нет, но элемент существует в DOM
-                  document.body.contains(calObj.calendar) && document.body.removeChild(calObj.calendar);
-                }
-              }
-              // Удаляем оверлей из DOM
-              if (calObj.overlay) {
-                if (calObj.overlay.parentNode) {
-                  calObj.overlay.parentNode.removeChild(calObj.overlay);
-                } else {
-                  // Если родителя нет, но элемент существует в DOM
-                  document.body.contains(calObj.overlay) && document.body.removeChild(calObj.overlay);
-                }
+        // Функция для закрытия всех открытых календарей
+        const closeAllCalendars = () => {
+          while (window.openCalendars.length > 0) {
+            const calObj = window.openCalendars.pop();
+            // Удаляем календарь из DOM
+            if (calObj.calendar) {
+              if (calObj.calendar.parentNode) {
+                calObj.calendar.parentNode.removeChild(calObj.calendar);
+              } else {
+                // Если родителя нет, но элемент существует в DOM
+                document.body.contains(calObj.calendar) && document.body.removeChild(calObj.calendar);
               }
             }
+            // Удаляем оверлей из DOM
+            if (calObj.overlay) {
+              if (calObj.overlay.parentNode) {
+                calObj.overlay.parentNode.removeChild(calObj.overlay);
+              } else {
+                // Если родителя нет, но элемент существует в DOM
+                document.body.contains(calObj.overlay) && document.body.removeChild(calObj.overlay);
+              }
+            }
+          }
 
-            // Для надежности проверим, не остались ли элементы календаря в DOM
-            const leftoverCalendars = document.querySelectorAll('.custom-calendar');
-            const leftoverOverlays = document.querySelectorAll('.calendar-overlay');
-            
-            leftoverCalendars.forEach(cal => cal.parentNode && cal.parentNode.removeChild(cal));
-            leftoverOverlays.forEach(overlay => overlay.parentNode && overlay.parentNode.removeChild(overlay));
-          };
+          // Для надежности проверим, не остались ли элементы календаря в DOM
+          const leftoverCalendars = document.querySelectorAll('.custom-calendar');
+          const leftoverOverlays = document.querySelectorAll('.calendar-overlay');
           
-          // Click handler для выбора даты
-          const handleDateSelect = (e, year, month, day, formatDate) => {
-        e.preventDefault();
-            e.stopPropagation();
-            
-            const selectedDate = new Date(year, month, day);
-            dateInput.value = formatDate(selectedDate);
-            
-            // Закрываем календарь
-            closeAllCalendars();
-            
-            // Trigger change event
-            const event = new Event('change');
-            dateInput.dispatchEvent(event);
-          };
+          leftoverCalendars.forEach(cal => cal.parentNode && cal.parentNode.removeChild(cal));
+          leftoverOverlays.forEach(overlay => overlay.parentNode && overlay.parentNode.removeChild(overlay));
+        };
+        
+        // Click handler для выбора даты
+        const handleDateSelect = (e, year, month, day, formatDate) => {
+          e.preventDefault();
+          e.stopPropagation();
           
-          // Create custom date picker display
-          const createCustomDatePicker = () => {
-            // Закрываем все открытые календари перед открытием нового
-            closeAllCalendars();
+          const selectedDate = new Date(year, month, day);
+          dateInput.value = formatDate(selectedDate);
+          
+          // Закрываем календарь
+          closeAllCalendars();
+          
+          // Trigger change event
+          const event = new Event('change');
+          dateInput.dispatchEvent(event);
+        };
+        
+        // Create custom date picker display
+        const createCustomDatePicker = () => {
+          // Закрываем все открытые календари перед открытием нового
+          closeAllCalendars();
+          
+          const currentValue = dateInput.value;
+          let defaultDate = new Date();
+          
+          if (currentValue) {
+            defaultDate = new Date(currentValue);
+          }
+          
+          // Создаем оверлей для мобильных устройств
+          const isMobile = window.innerWidth <= 576;
+          let overlay = null;
+          
+          if (isMobile) {
+            overlay = document.createElement('div');
+            overlay.className = 'calendar-overlay';
+            document.body.appendChild(overlay);
             
-            const currentValue = dateInput.value;
-            let defaultDate = new Date();
+            // Анимируем появление оверлея
+            setTimeout(() => {
+              overlay.classList.add('active');
+            }, 10);
             
-            if (currentValue) {
-              defaultDate = new Date(currentValue);
-            }
-            
-            // Создаем оверлей для мобильных устройств
-            const isMobile = window.innerWidth <= 576;
-            let overlay = null;
-            
-            if (isMobile) {
-              overlay = document.createElement('div');
-              overlay.className = 'calendar-overlay';
-              document.body.appendChild(overlay);
-              
-              // Анимируем появление оверлея
-              setTimeout(() => {
-                overlay.classList.add('active');
-              }, 10);
-              
-              // Закрываем календарь при клике на оверлей
-              overlay.addEventListener('click', () => {
-                closeAllCalendars();
-              });
-            }
-            
-            // Format date
-            const formatDate = (date) => {
-              const year = date.getFullYear();
-              const month = String(date.getMonth() + 1).padStart(2, '0');
-              const day = String(date.getDate()).padStart(2, '0');
-              return `${year}-${month}-${day}`;
-            };
-            
-            // Create calendar UI
-            const calendar = document.createElement('div');
-            calendar.className = 'custom-calendar';
-            calendar.style.position = isMobile ? 'fixed' : 'absolute';
-            calendar.style.zIndex = '9999';
-            calendar.style.backgroundColor = 'var(--800)';
-            calendar.style.border = '1px solid var(--700)';
-            calendar.style.borderRadius = '0.5rem';
-            calendar.style.padding = '1rem';
-            calendar.style.boxShadow = '0 4px 12px rgba(0, 0, 0, 0.25)';
-            
-            if (!isMobile) {
-              calendar.style.width = '280px';
-              // Добавляем класс для анимации только на десктопах
-              calendar.classList.add('desktop-calendar-animation');
-            }
-            
-            // Добавляем календарь в массив перед добавлением в DOM
-            window.openCalendars.push({
-              calendar,
-              overlay,
-              container
+            // Закрываем календарь при клике на оверлей
+            overlay.addEventListener('click', () => {
+              closeAllCalendars();
             });
-            
-            // Add header with month/year selector
-            const header = document.createElement('div');
-            header.className = 'calendar-header';
-            header.style.display = 'flex';
-            header.style.justifyContent = 'space-between';
-            header.style.marginBottom = '1rem';
-            header.style.alignItems = 'center';
-            
-            // Previous month button
-            const prevBtn = document.createElement('button');
-            prevBtn.innerHTML = '&laquo;';
-            prevBtn.className = 'btn btn-small';
-            prevBtn.style.minWidth = '30px';
-            prevBtn.style.height = '30px';
-            prevBtn.style.padding = '0';
-            prevBtn.style.backgroundColor = 'var(--700)';
-            prevBtn.style.color = 'var(--primary-color)';
-            
-            // Month/Year display
-            const monthYearDisplay = document.createElement('div');
-            monthYearDisplay.style.fontWeight = 'bold';
-            monthYearDisplay.style.fontSize = '1rem';
-            
-            // Next month button
-            const nextBtn = document.createElement('button');
-            nextBtn.innerHTML = '&raquo;';
-            nextBtn.className = 'btn btn-small';
-            nextBtn.style.minWidth = '30px';
-            nextBtn.style.height = '30px';
-            nextBtn.style.padding = '0';
-            nextBtn.style.backgroundColor = 'var(--700)';
-            nextBtn.style.color = 'var(--primary-color)';
-            
-            header.appendChild(prevBtn);
-            header.appendChild(monthYearDisplay);
-            header.appendChild(nextBtn);
-            
-            // Create days grid
-            const daysGrid = document.createElement('div');
-            daysGrid.className = 'calendar-grid';
-            daysGrid.style.display = 'grid';
-            daysGrid.style.gridTemplateColumns = 'repeat(7, 1fr)';
-            daysGrid.style.gap = '0.5rem';
-            daysGrid.style.textAlign = 'center';
-            
-            // Day names
-            const dayNames = ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'];
-            for (const day of dayNames) {
-              const dayNameElement = document.createElement('div');
-              dayNameElement.textContent = day;
-              dayNameElement.style.fontWeight = 'bold';
-              daysGrid.appendChild(dayNameElement);
+          }
+          
+          // Format date
+          const formatDate = (date) => {
+            const year = date.getFullYear();
+            const month = String(date.getMonth() + 1).padStart(2, '0');
+            const day = String(date.getDate()).padStart(2, '0');
+            return `${year}-${month}-${day}`;
+          };
+          
+          // Create calendar UI
+          const calendar = document.createElement('div');
+          calendar.className = 'custom-calendar';
+          calendar.style.position = isMobile ? 'fixed' : 'absolute';
+          calendar.style.zIndex = '9999';
+          calendar.style.backgroundColor = 'var(--800)';
+          calendar.style.border = '1px solid var(--700)';
+          calendar.style.borderRadius = '0.5rem';
+          calendar.style.padding = '1rem';
+          calendar.style.boxShadow = '0 4px 12px rgba(0, 0, 0, 0.25)';
+          
+          if (!isMobile) {
+            calendar.style.width = '280px';
+            // Добавляем класс для анимации только на десктопах
+            calendar.classList.add('desktop-calendar-animation');
+          }
+          
+          // Добавляем календарь в массив перед добавлением в DOM
+          window.openCalendars.push({
+            calendar,
+            overlay,
+            container
+          });
+          
+          // Add header with month/year selector
+          const header = document.createElement('div');
+          header.className = 'calendar-header';
+          header.style.display = 'flex';
+          header.style.justifyContent = 'space-between';
+          header.style.marginBottom = '1rem';
+          header.style.alignItems = 'center';
+          
+          // Previous month button
+          const prevBtn = document.createElement('button');
+          prevBtn.innerHTML = '&laquo;';
+          prevBtn.className = 'btn btn-small';
+          prevBtn.style.minWidth = '30px';
+          prevBtn.style.height = '30px';
+          prevBtn.style.padding = '0';
+          prevBtn.style.backgroundColor = 'var(--700)';
+          prevBtn.style.color = 'var(--primary-color)';
+          
+          // Month/Year display
+          const monthYearDisplay = document.createElement('div');
+          monthYearDisplay.style.fontWeight = 'bold';
+          monthYearDisplay.style.fontSize = '1rem';
+          
+          // Next month button
+          const nextBtn = document.createElement('button');
+          nextBtn.innerHTML = '&raquo;';
+          nextBtn.className = 'btn btn-small';
+          nextBtn.style.minWidth = '30px';
+          nextBtn.style.height = '30px';
+          nextBtn.style.padding = '0';
+          nextBtn.style.backgroundColor = 'var(--700)';
+          nextBtn.style.color = 'var(--primary-color)';
+          
+          header.appendChild(prevBtn);
+          header.appendChild(monthYearDisplay);
+          header.appendChild(nextBtn);
+          
+          // Create days grid
+          const daysGrid = document.createElement('div');
+          daysGrid.className = 'calendar-grid';
+          daysGrid.style.display = 'grid';
+          daysGrid.style.gridTemplateColumns = 'repeat(7, 1fr)';
+          daysGrid.style.gap = '0.5rem';
+          daysGrid.style.textAlign = 'center';
+          
+          // Day names
+          const dayNames = ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'];
+          for (const day of dayNames) {
+            const dayNameElement = document.createElement('div');
+            dayNameElement.textContent = day;
+            dayNameElement.style.fontWeight = 'bold';
+            daysGrid.appendChild(dayNameElement);
+          }
+          
+          calendar.appendChild(header);
+          calendar.appendChild(daysGrid);
+          
+          // Render calendar for specific month
+          const renderCalendar = (year, month) => {
+            // Clear previous days
+            while (daysGrid.childElementCount > 7) {
+              daysGrid.removeChild(daysGrid.lastChild);
             }
             
-            calendar.appendChild(header);
-            calendar.appendChild(daysGrid);
+            // Update month/year display
+            const months = ['January', 'February', 'March', 'April', 'May', 'June', 
+                          'July', 'August', 'September', 'October', 'November', 'December'];
+            monthYearDisplay.textContent = `${months[month]} ${year}`;
             
-            // Render calendar for specific month
-            const renderCalendar = (year, month) => {
-              // Clear previous days
-              while (daysGrid.childElementCount > 7) {
-                daysGrid.removeChild(daysGrid.lastChild);
+            // Get first day of month and number of days
+            const firstDay = new Date(year, month, 1);
+            const lastDay = new Date(year, month + 1, 0);
+            const daysInMonth = lastDay.getDate();
+            
+            // Add empty cells for days before first day of month
+            let firstDayOfWeek = firstDay.getDay(); // 0 = Sunday
+            for (let i = 0; i < firstDayOfWeek; i++) {
+              const emptyDay = document.createElement('div');
+              daysGrid.appendChild(emptyDay);
+            }
+            
+            // Add day cells
+            for (let day = 1; day <= daysInMonth; day++) {
+              const dayElement = document.createElement('div');
+              dayElement.textContent = day;
+              dayElement.style.cursor = 'pointer';
+              dayElement.style.padding = '0.5rem';
+              dayElement.style.borderRadius = '0.25rem';
+              dayElement.style.width = '30px';
+              dayElement.style.height = '30px';
+              dayElement.style.display = 'flex';
+              dayElement.style.alignItems = 'center';
+              dayElement.style.justifyContent = 'center';
+              
+              // Check if this is the currently selected date
+              const currentDate = new Date(year, month, day);
+              if (defaultDate.getFullYear() === year &&
+                  defaultDate.getMonth() === month &&
+                  defaultDate.getDate() === day) {
+                dayElement.style.backgroundColor = 'var(--accent)';
+                dayElement.style.color = 'var(--900)';
+                dayElement.style.fontWeight = 'bold';
+                dayElement.style.boxShadow = '0 0 0 2px var(--accent)';
+              } else {
+                dayElement.style.backgroundColor = 'var(--800)';
               }
               
-              // Update month/year display
-              const months = ['January', 'February', 'March', 'April', 'May', 'June', 
-                            'July', 'August', 'September', 'October', 'November', 'December'];
-              monthYearDisplay.textContent = `${months[month]} ${year}`;
+              // Hover effect
+              dayElement.addEventListener('mouseover', () => {
+                if (!(defaultDate.getFullYear() === year &&
+                    defaultDate.getMonth() === month &&
+                    defaultDate.getDate() === day)) {
+                  dayElement.style.backgroundColor = 'var(--700)';
+                }
+              });
               
-              // Get first day of month and number of days
-              const firstDay = new Date(year, month, 1);
-              const lastDay = new Date(year, month + 1, 0);
-              const daysInMonth = lastDay.getDate();
-              
-              // Add empty cells for days before first day of month
-              let firstDayOfWeek = firstDay.getDay(); // 0 = Sunday
-              for (let i = 0; i < firstDayOfWeek; i++) {
-                const emptyDay = document.createElement('div');
-                daysGrid.appendChild(emptyDay);
-              }
-              
-              // Add day cells
-              for (let day = 1; day <= daysInMonth; day++) {
-                const dayElement = document.createElement('div');
-                dayElement.textContent = day;
-                dayElement.style.cursor = 'pointer';
-                dayElement.style.padding = '0.5rem';
-                dayElement.style.borderRadius = '0.25rem';
-                dayElement.style.width = '30px';
-                dayElement.style.height = '30px';
-                dayElement.style.display = 'flex';
-                dayElement.style.alignItems = 'center';
-                dayElement.style.justifyContent = 'center';
-                
-                // Check if this is the currently selected date
-                const currentDate = new Date(year, month, day);
+              dayElement.addEventListener('mouseout', () => {
                 if (defaultDate.getFullYear() === year &&
                     defaultDate.getMonth() === month &&
                     defaultDate.getDate() === day) {
                   dayElement.style.backgroundColor = 'var(--accent)';
-                  dayElement.style.color = 'var(--900)';
-                  dayElement.style.fontWeight = 'bold';
-                  dayElement.style.boxShadow = '0 0 0 2px var(--accent)';
                 } else {
                   dayElement.style.backgroundColor = 'var(--800)';
                 }
-                
-                // Hover effect
-                dayElement.addEventListener('mouseover', () => {
-                  if (!(defaultDate.getFullYear() === year &&
-                      defaultDate.getMonth() === month &&
-                      defaultDate.getDate() === day)) {
-                    dayElement.style.backgroundColor = 'var(--700)';
-                  }
-                });
-                
-                dayElement.addEventListener('mouseout', () => {
-                  if (defaultDate.getFullYear() === year &&
-                      defaultDate.getMonth() === month &&
-                      defaultDate.getDate() === day) {
-                    dayElement.style.backgroundColor = 'var(--accent)';
-                  } else {
-                    dayElement.style.backgroundColor = 'var(--800)';
-                  }
-                });
-                
-                // Click handler
-                dayElement.addEventListener('click', (e) => {
-                  handleDateSelect(e, year, month, day, formatDate);
-                });
-                
-                daysGrid.appendChild(dayElement);
-              }
-            };
-            
-            // Initial render
-            renderCalendar(defaultDate.getFullYear(), defaultDate.getMonth());
-            
-            // Previous/Next month handlers
-            prevBtn.addEventListener('click', (e) => {
-              // Предотвращаем всплытие события и дефолтное поведение
-              e.preventDefault();
-              e.stopPropagation();
+              });
               
-              defaultDate.setMonth(defaultDate.getMonth() - 1);
-              renderCalendar(defaultDate.getFullYear(), defaultDate.getMonth());
-            });
-            
-            nextBtn.addEventListener('click', (e) => {
-              // Предотвращаем всплытие события и дефолтное поведение
-              e.preventDefault();
-              e.stopPropagation();
+              // Click handler
+              dayElement.addEventListener('click', (e) => {
+                handleDateSelect(e, year, month, day, formatDate);
+              });
               
-              defaultDate.setMonth(defaultDate.getMonth() + 1);
-              renderCalendar(defaultDate.getFullYear(), defaultDate.getMonth());
-            });
-            
-            // Position and show calendar
-            if (isMobile) {
-              document.body.appendChild(calendar);
-            } else {
-              document.body.appendChild(calendar); // Прикрепляем к body вместо container
-              
-              // Position the calendar relative to the input
-              const inputRect = container.getBoundingClientRect();
-              const calendarRect = calendar.getBoundingClientRect();
-              
-              // Позиционируем относительно body с центрированием
-              const bodyRect = document.body.getBoundingClientRect();
-              const top = inputRect.bottom + window.scrollY + 10; // Добавляем отступ 10px
-              const left = inputRect.left + window.scrollX + (inputRect.width / 2) - (calendarRect.width / 2); // Центрируем
-              
-              // Проверяем, достаточно ли места внизу
-              const spaceBelow = window.innerHeight - (inputRect.bottom - bodyRect.top);
-              
-              if (spaceBelow < calendarRect.height) {
-                // Недостаточно места внизу, показываем календарь сверху
-                calendar.style.top = `${top - inputRect.height - calendarRect.height - 20}px`;
-              } else {
-                // Показываем календарь снизу
-                calendar.style.top = `${top}px`;
-              }
-              
-              calendar.style.left = `${left}px`;
-              
-              // Обеспечиваем видимость календаря
-              const rightEdge = left + calendarRect.width;
-              const windowWidth = window.innerWidth;
-              
-              if (rightEdge > windowWidth) {
-                const overflow = rightEdge - windowWidth;
-                calendar.style.left = `${left - overflow - 10}px`;
-              }
-              
-              if (left < 0) {
-                calendar.style.left = '10px';
-              }
+              daysGrid.appendChild(dayElement);
             }
           };
           
-          // Show custom date picker when clicking on icon or input
-          iconContainer.addEventListener('click', (e) => {
+          // Initial render
+          renderCalendar(defaultDate.getFullYear(), defaultDate.getMonth());
+          
+          // Previous/Next month handlers
+          prevBtn.addEventListener('click', (e) => {
+            // Предотвращаем всплытие события и дефолтное поведение
             e.preventDefault();
             e.stopPropagation();
-            createCustomDatePicker();
-          });
-          
-          dateInput.addEventListener('click', (e) => {
-            e.preventDefault();
-            e.stopPropagation();
-            createCustomDatePicker();
-          });
-          
-          // Закрытие по клику вне календаря
-          document.addEventListener('click', (e) => {
-            // Проверяем, открыт ли какой-либо календарь
-            if (window.openCalendars && window.openCalendars.length > 0) {
-              // Проверяем, не кликнули ли мы по календарю или связанным элементам
-              const clickedInsideCalendar = window.openCalendars.some(calObj => {
-                return (
-                  (calObj.calendar && calObj.calendar.contains(e.target)) ||
-                  (calObj.overlay && calObj.overlay.contains(e.target)) ||
-                  (e.target === iconContainer) ||
-                  (e.target === dateInput)
-                );
-              });
-              
-              if (!clickedInsideCalendar) {
-                closeAllCalendars();
-              }
-            }
-          });
-        } else {
-          // Native date picker is available
-          iconContainer.addEventListener('click', () => {
-            // Focus on the input
-            dateInput.focus();
             
-            // Open the date picker
-            try {
-              dateInput.showPicker();
-            } catch (e) {
-              // Fallback if showPicker fails
-              createCustomDatePicker();
-            }
+            defaultDate.setMonth(defaultDate.getMonth() - 1);
+            renderCalendar(defaultDate.getFullYear(), defaultDate.getMonth());
           });
-        }
+          
+          nextBtn.addEventListener('click', (e) => {
+            // Предотвращаем всплытие события и дефолтное поведение
+            e.preventDefault();
+            e.stopPropagation();
+            
+            defaultDate.setMonth(defaultDate.getMonth() + 1);
+            renderCalendar(defaultDate.getFullYear(), defaultDate.getMonth());
+          });
+          
+          // Position and show calendar
+          if (isMobile) {
+            document.body.appendChild(calendar);
+          } else {
+            document.body.appendChild(calendar); // Прикрепляем к body вместо container
+            
+            // Position the calendar relative to the input
+            const inputRect = container.getBoundingClientRect();
+            const calendarRect = calendar.getBoundingClientRect();
+            
+            // Позиционируем относительно body
+            const bodyRect = document.body.getBoundingClientRect();
+            const top = inputRect.bottom + window.scrollY + 10; // Добавляем отступ 10px
+            const left = inputRect.left + window.scrollX + (inputRect.width / 2) - (calendarRect.width / 2); // Центрируем
+            
+            // Проверяем, достаточно ли места внизу
+            const spaceBelow = window.innerHeight - (inputRect.bottom - bodyRect.top);
+            
+            if (spaceBelow < calendarRect.height) {
+              // Недостаточно места внизу, показываем календарь сверху
+              calendar.style.top = `${top - inputRect.height - calendarRect.height - 20}px`;
+            } else {
+              // Показываем календарь снизу
+              calendar.style.top = `${top}px`;
+            }
+            
+            calendar.style.left = `${left}px`;
+            
+            // Обеспечиваем видимость календаря
+            const rightEdge = left + calendarRect.width;
+            const windowWidth = window.innerWidth;
+            
+            if (rightEdge > windowWidth) {
+              const overflow = rightEdge - windowWidth;
+              calendar.style.left = `${left - overflow - 10}px`;
+            }
+            
+            if (left < 0) {
+              calendar.style.left = '10px';
+            }
+          }
+        };
+        
+        // Show custom date picker when clicking on icon or input
+        iconContainer.addEventListener('click', (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          createCustomDatePicker();
+        });
+        
+        dateInput.addEventListener('click', (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          createCustomDatePicker();
+        });
+        
+        // Отключаем нативный календарь
+        dateInput.addEventListener('mousedown', (e) => {
+          e.preventDefault();
+        });
+        
+        // Закрытие по клику вне календаря
+        document.addEventListener('click', (e) => {
+          // Проверяем, открыт ли какой-либо календарь
+          if (window.openCalendars && window.openCalendars.length > 0) {
+            // Проверяем, не кликнули ли мы по календарю или связанным элементам
+            const clickedInsideCalendar = window.openCalendars.some(calObj => {
+              return (
+                (calObj.calendar && calObj.calendar.contains(e.target)) ||
+                (calObj.overlay && calObj.overlay.contains(e.target)) ||
+                (e.target === iconContainer) ||
+                (e.target === dateInput)
+              );
+            });
+            
+            if (!clickedInsideCalendar) {
+              closeAllCalendars();
+            }
+          }
+        });
       }
     }
   }
