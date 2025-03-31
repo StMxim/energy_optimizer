@@ -106,14 +106,6 @@ body {
   align-items: center;
 }
 
-.test-data-notice::before {
-  content: "\f071";
-  font-family: "Font Awesome 6 Free", sans-serif;
-  font-weight: 900;
-  margin-right: 0.5rem;
-  color: var(--warning-color);
-}
-
 .high-profit {
   color: #28a745;
   font-weight: bold;
