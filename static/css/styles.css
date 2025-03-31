@@ -754,18 +754,34 @@ textarea:disabled {
 
 .date-input-wrapper {
   position: relative;
-  width: 100%;
+  cursor: pointer;
 }
 
 .date-input-wrapper:after {
-  content: '';
   position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-family: "Font Awesome 5 Free";
+  font-weight: 900;
+  content: "\f073"; /* Calendar icon */
+  color: var(--accent);
+  pointer-events: none;
+}
+
+.date-input {
+  position: relative;
   cursor: pointer;
-  z-index: 1;
+}
+
+.date-icon {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--accent);
+  pointer-events: all;
+  cursor: pointer;
 }
 
 input[type="date"] {
@@ -779,8 +795,9 @@ input[type="date"] {
   background-color: var(--700);
   color: var(--text-color);
   transition: all 0.3s ease;
-  position: relative;
-  z-index: 2;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
 }
 
 input[type="date"]:hover {
@@ -794,26 +811,35 @@ input[type="date"]:focus {
 }
 
 input[type="date"]::-webkit-calendar-picker-indicator {
-  background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="15" viewBox="0 0 24 24"><path fill="%23fffd9f" d="M20 3h-1V1h-2v2H7V1H5v2H4c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 18H4V8h16v13z"/></svg>');
-  width: 1.375rem;
-  height: 1.375rem;
+  opacity: 0; /* Скрываем стандартный индикатор */
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  top: 0;
+  left: 0;
+  margin: 0;
   cursor: pointer;
-  margin-left: 0.3125rem;
-  transition: transform 0.2s ease;
-  position: relative;
-  z-index: 3;
-  opacity: 1;
-  color: var(--accent);
 }
 
-input[type="date"]:hover::-webkit-calendar-picker-indicator {
-  transform: scale(1.2);
+/* Стили для кастомного календаря */
+.custom-calendar {
+  font-size: 0.9rem;
 }
 
-input[type="date"] {
-  -webkit-appearance: none;
-  -moz-appearance: none;
-  appearance: none;
+.custom-calendar .btn-small {
+  padding: 0.25rem 0.5rem;
+  min-width: auto;
+}
+
+.calendar-grid > div {
+  height: 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.calendar-header {
+  font-family: 'Switzer', 'Arial', sans-serif;
 }
 
 .date-range {

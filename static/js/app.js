@@ -146,24 +146,251 @@ document.addEventListener('DOMContentLoaded', function() {
   
   // Function to enhance date inputs to make them more user-friendly
   function enhanceDateInputs() {
-    const dateWrappers = document.querySelectorAll('.date-input-wrapper');
+    // Enhance all date inputs with calendar icon
+    const dateContainers = document.querySelectorAll('.date-input');
     
-    for (const wrapper of dateWrappers) {
-      wrapper.addEventListener('click', function(e) {
-        // Prevent default to stop any other event handlers
-        e.preventDefault();
+    for (const container of dateContainers) {
+      const dateInput = container.querySelector('input[type="date"]');
+      const iconContainer = document.createElement('div');
+      iconContainer.className = 'date-icon';
+      iconContainer.innerHTML = '<i class="fas fa-calendar-alt"></i>';
+      container.appendChild(iconContainer);
+      
+      if (dateInput) {
+        // Check if browser supports native date picker
+        const isDateSupported = function() {
+          const input = document.createElement('input');
+          input.setAttribute('type', 'date');
+          const notADateValue = 'not-a-date';
+          input.setAttribute('value', notADateValue);
+          return input.value !== notADateValue;
+        }();
         
-        // Find the input inside the wrapper
-        const dateInput = this.querySelector('input[type="date"]');
+        // Check if we're in an iframe and if showPicker is supported
+        const isInIframe = window.self !== window.top;
+        const supportsNativePicker = dateInput.showPicker && typeof dateInput.showPicker === 'function';
+        const canUseNativePicker = isDateSupported && supportsNativePicker && !isInIframe;
         
-        if (dateInput) {
-          // Focus on the input
-          dateInput.focus();
+        console.log("Native date picker available:", canUseNativePicker);
+        
+        // Create simple date picker if native not available
+        if (!canUseNativePicker) {
+          console.log("Native date picker not available, using fallback");
+          // Create custom date picker display
+          const createCustomDatePicker = () => {
+            const currentValue = dateInput.value;
+            let defaultDate = new Date();
+            
+            if (currentValue) {
+              defaultDate = new Date(currentValue);
+            }
+            
+            // Format date
+            const formatDate = (date) => {
+              const year = date.getFullYear();
+              const month = String(date.getMonth() + 1).padStart(2, '0');
+              const day = String(date.getDate()).padStart(2, '0');
+              return `${year}-${month}-${day}`;
+            };
+            
+            // Create calendar UI
+            const calendar = document.createElement('div');
+            calendar.className = 'custom-calendar';
+            calendar.style.position = 'absolute';
+            calendar.style.zIndex = '1000';
+            calendar.style.backgroundColor = 'var(--800)';
+            calendar.style.border = '1px solid var(--700)';
+            calendar.style.borderRadius = '0.5rem';
+            calendar.style.padding = '1rem';
+            calendar.style.boxShadow = '0 4px 12px rgba(0, 0, 0, 0.15)';
+            
+            // Add header with month/year selector
+            const header = document.createElement('div');
+            header.className = 'calendar-header';
+            header.style.display = 'flex';
+            header.style.justifyContent = 'space-between';
+            header.style.marginBottom = '1rem';
+            
+            // Previous month button
+            const prevBtn = document.createElement('button');
+            prevBtn.innerHTML = '&laquo;';
+            prevBtn.className = 'btn btn-small';
+            
+            // Month/Year display
+            const monthYearDisplay = document.createElement('div');
+            
+            // Next month button
+            const nextBtn = document.createElement('button');
+            nextBtn.innerHTML = '&raquo;';
+            nextBtn.className = 'btn btn-small';
+            
+            header.appendChild(prevBtn);
+            header.appendChild(monthYearDisplay);
+            header.appendChild(nextBtn);
+            
+            // Create days grid
+            const daysGrid = document.createElement('div');
+            daysGrid.className = 'calendar-grid';
+            daysGrid.style.display = 'grid';
+            daysGrid.style.gridTemplateColumns = 'repeat(7, 1fr)';
+            daysGrid.style.gap = '0.5rem';
+            daysGrid.style.textAlign = 'center';
+            
+            // Day names
+            const dayNames = ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'];
+            for (const day of dayNames) {
+              const dayNameElement = document.createElement('div');
+              dayNameElement.textContent = day;
+              dayNameElement.style.fontWeight = 'bold';
+              daysGrid.appendChild(dayNameElement);
+            }
+            
+            calendar.appendChild(header);
+            calendar.appendChild(daysGrid);
+            
+            // Render calendar for specific month
+            const renderCalendar = (year, month) => {
+              // Clear previous days
+              while (daysGrid.childElementCount > 7) {
+                daysGrid.removeChild(daysGrid.lastChild);
+              }
+              
+              // Update month/year display
+              const months = ['January', 'February', 'March', 'April', 'May', 'June', 
+                            'July', 'August', 'September', 'October', 'November', 'December'];
+              monthYearDisplay.textContent = `${months[month]} ${year}`;
+              
+              // Get first day of month and number of days
+              const firstDay = new Date(year, month, 1);
+              const lastDay = new Date(year, month + 1, 0);
+              const daysInMonth = lastDay.getDate();
+              
+              // Add empty cells for days before first day of month
+              let firstDayOfWeek = firstDay.getDay(); // 0 = Sunday
+              for (let i = 0; i < firstDayOfWeek; i++) {
+                const emptyDay = document.createElement('div');
+                daysGrid.appendChild(emptyDay);
+              }
+              
+              // Add day cells
+              for (let day = 1; day <= daysInMonth; day++) {
+                const dayElement = document.createElement('div');
+                dayElement.textContent = day;
+                dayElement.style.cursor = 'pointer';
+                dayElement.style.padding = '0.5rem';
+                dayElement.style.borderRadius = '0.25rem';
+                
+                // Check if this is the currently selected date
+                const currentDate = new Date(year, month, day);
+                if (defaultDate.getFullYear() === year &&
+                    defaultDate.getMonth() === month &&
+                    defaultDate.getDate() === day) {
+                  dayElement.style.backgroundColor = 'var(--accent)';
+                  dayElement.style.color = 'var(--900)';
+                } else {
+                  dayElement.style.backgroundColor = 'var(--800)';
+                }
+                
+                // Hover effect
+                dayElement.addEventListener('mouseover', () => {
+                  if (!(defaultDate.getFullYear() === year &&
+                      defaultDate.getMonth() === month &&
+                      defaultDate.getDate() === day)) {
+                    dayElement.style.backgroundColor = 'var(--700)';
+                  }
+                });
+                
+                dayElement.addEventListener('mouseout', () => {
+                  if (defaultDate.getFullYear() === year &&
+                      defaultDate.getMonth() === month &&
+                      defaultDate.getDate() === day) {
+                    dayElement.style.backgroundColor = 'var(--accent)';
+                  } else {
+                    dayElement.style.backgroundColor = 'var(--800)';
+                  }
+                });
+                
+                // Click handler
+                dayElement.addEventListener('click', () => {
+                  const selectedDate = new Date(year, month, day);
+                  dateInput.value = formatDate(selectedDate);
+                  defaultDate = selectedDate;
+                  
+                  // Hide calendar after selection
+                  if (calendar.parentNode) {
+                    calendar.parentNode.removeChild(calendar);
+                  }
+                  
+                  // Trigger change event
+                  const event = new Event('change');
+                  dateInput.dispatchEvent(event);
+                });
+                
+                daysGrid.appendChild(dayElement);
+              }
+            };
+            
+            // Initial render
+            renderCalendar(defaultDate.getFullYear(), defaultDate.getMonth());
+            
+            // Previous/Next month handlers
+            prevBtn.addEventListener('click', () => {
+              defaultDate.setMonth(defaultDate.getMonth() - 1);
+              renderCalendar(defaultDate.getFullYear(), defaultDate.getMonth());
+            });
+            
+            nextBtn.addEventListener('click', () => {
+              defaultDate.setMonth(defaultDate.getMonth() + 1);
+              renderCalendar(defaultDate.getFullYear(), defaultDate.getMonth());
+            });
+            
+            // Close when clicking outside
+            document.addEventListener('click', (e) => {
+              if (!calendar.contains(e.target) && e.target !== iconContainer && e.target !== dateInput) {
+                if (calendar.parentNode) {
+                  calendar.parentNode.removeChild(calendar);
+                }
+              }
+            });
+            
+            // Position and show calendar
+            container.appendChild(calendar);
+            
+            // Position the calendar relative to the input
+            const inputRect = container.getBoundingClientRect();
+            calendar.style.top = `${inputRect.height + 5}px`;
+            calendar.style.left = '0';
+          };
           
-          // Open the date picker
-          dateInput.showPicker();
+          // Show custom date picker when clicking on icon or input
+          iconContainer.addEventListener('click', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            createCustomDatePicker();
+          });
+          
+          dateInput.addEventListener('click', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            createCustomDatePicker();
+          });
+        } else {
+          // Native date picker is available
+          iconContainer.addEventListener('click', () => {
+            // Focus on the input
+            dateInput.focus();
+            
+            // Open the date picker
+            try {
+              dateInput.showPicker();
+            } catch (e) {
+              console.warn("Failed to show native picker:", e);
+              // Fallback if showPicker fails
+              createCustomDatePicker();
+            }
+          });
         }
-      });
+      }
     }
   }
   
