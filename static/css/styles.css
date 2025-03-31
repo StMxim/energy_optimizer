@@ -1050,29 +1050,36 @@ footer {
   .tabs {
     flex-wrap: nowrap;
     width: 100%;
+    padding: 0;
+    margin: 0;
   }
 
   .tabs li {
     flex: 0 0 auto;
+    margin: 0;
   }
 
   .tabs li a {
     padding: 0.875rem 1.125rem;
     font-size: 0.9rem;
+    border-radius: 0;
+    border-bottom: 0.0625rem solid var(--border-color);
   }
 
-  .tabs li:nth-child(2) a {
-    border-radius: 0;
+  .tabs li:first-child a {
+    border-radius: var(--border-radius) var(--border-radius) 0 0;
   }
 
-  .tabs li:nth-child(3) a {
-    border-radius: 0;
+  .tabs li:last-child a {
+    border-radius: 0 0 var(--border-radius) var(--border-radius);
+    border-bottom: none;
   }
-  
+
+  .tabs li:nth-child(2) a,
+  .tabs li:nth-child(3) a,
   .tabs li:nth-child(4) a {
-    border-radius: 0 var(--border-radius) var(--border-radius) 0;
+    border-radius: 0;
   }
-
 }
 
 /* Стили для страницы Help */
@@ -1104,10 +1111,13 @@ footer {
 @media (max-width: 768px) {
   .tabs {
     flex-direction: column;
+    width: 100%;
   }
 
   .tabs li a {
     text-align: center;
+    width: 100%;
+    box-sizing: border-box;
   }
 
   .card-header h2 {
