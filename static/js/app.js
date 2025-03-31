@@ -185,18 +185,37 @@ document.addEventListener('DOMContentLoaded', function() {
           const closeAllCalendars = () => {
             while (window.openCalendars.length > 0) {
               const calObj = window.openCalendars.pop();
-              if (calObj.calendar && calObj.calendar.parentNode) {
-                calObj.calendar.parentNode.removeChild(calObj.calendar);
+              // Удаляем календарь из DOM
+              if (calObj.calendar) {
+                if (calObj.calendar.parentNode) {
+                  calObj.calendar.parentNode.removeChild(calObj.calendar);
+                } else {
+                  // Если родителя нет, но элемент существует в DOM
+                  document.body.contains(calObj.calendar) && document.body.removeChild(calObj.calendar);
+                }
               }
-              if (calObj.overlay && calObj.overlay.parentNode) {
-                calObj.overlay.parentNode.removeChild(calObj.overlay);
+              // Удаляем оверлей из DOM
+              if (calObj.overlay) {
+                if (calObj.overlay.parentNode) {
+                  calObj.overlay.parentNode.removeChild(calObj.overlay);
+                } else {
+                  // Если родителя нет, но элемент существует в DOM
+                  document.body.contains(calObj.overlay) && document.body.removeChild(calObj.overlay);
+                }
               }
             }
+
+            // Для надежности проверим, не остались ли элементы календаря в DOM
+            const leftoverCalendars = document.querySelectorAll('.custom-calendar');
+            const leftoverOverlays = document.querySelectorAll('.calendar-overlay');
+            
+            leftoverCalendars.forEach(cal => cal.parentNode && cal.parentNode.removeChild(cal));
+            leftoverOverlays.forEach(overlay => overlay.parentNode && overlay.parentNode.removeChild(overlay));
           };
           
           // Click handler для выбора даты
           const handleDateSelect = (e, year, month, day, formatDate) => {
-            e.preventDefault();
+        e.preventDefault();
             e.stopPropagation();
             
             const selectedDate = new Date(year, month, day);
@@ -254,7 +273,7 @@ document.addEventListener('DOMContentLoaded', function() {
             const calendar = document.createElement('div');
             calendar.className = 'custom-calendar';
             calendar.style.position = isMobile ? 'fixed' : 'absolute';
-            calendar.style.zIndex = '1001';
+            calendar.style.zIndex = '9999';
             calendar.style.backgroundColor = 'var(--800)';
             calendar.style.border = '1px solid var(--700)';
             calendar.style.borderRadius = '0.5rem';
@@ -433,32 +452,37 @@ document.addEventListener('DOMContentLoaded', function() {
             if (isMobile) {
               document.body.appendChild(calendar);
             } else {
-              container.appendChild(calendar);
+              document.body.appendChild(calendar); // Прикрепляем к body вместо container
               
               // Position the calendar relative to the input
               const inputRect = container.getBoundingClientRect();
               const calendarRect = calendar.getBoundingClientRect();
               
-              // Проверяем, достаточно ли места внизу
-              const spaceBelow = window.innerHeight - inputRect.bottom;
+              // Позиционируем относительно body
+              const bodyRect = document.body.getBoundingClientRect();
+              const top = inputRect.bottom + window.scrollY;
+              const left = inputRect.left + window.scrollX;
               
-              if (spaceBelow < calendarRect.height && inputRect.top > calendarRect.height) {
+              // Проверяем, достаточно ли места внизу
+              const spaceBelow = window.innerHeight - (inputRect.bottom - bodyRect.top);
+              
+              if (spaceBelow < calendarRect.height) {
                 // Недостаточно места внизу, показываем календарь сверху
-                calendar.style.top = `-${calendarRect.height + 5}px`;
+                calendar.style.top = `${top - inputRect.height - calendarRect.height}px`;
               } else {
                 // Показываем календарь снизу
-                calendar.style.top = `${inputRect.height + 5}px`;
+                calendar.style.top = `${top}px`;
               }
               
-              calendar.style.left = '0';
+              calendar.style.left = `${left}px`;
               
               // Обеспечиваем видимость календаря
-              const rightEdge = calendar.getBoundingClientRect().right;
+              const rightEdge = left + calendarRect.width;
               const windowWidth = window.innerWidth;
               
               if (rightEdge > windowWidth) {
                 const overflow = rightEdge - windowWidth;
-                calendar.style.left = `-${overflow + 10}px`;
+                calendar.style.left = `${left - overflow - 10}px`;
               }
             }
           };
@@ -498,18 +522,18 @@ document.addEventListener('DOMContentLoaded', function() {
         } else {
           // Native date picker is available
           iconContainer.addEventListener('click', () => {
-            // Focus on the input
-            dateInput.focus();
-            
-            // Open the date picker
+          // Focus on the input
+          dateInput.focus();
+          
+          // Open the date picker
             try {
-              dateInput.showPicker();
+          dateInput.showPicker();
             } catch (e) {
               console.warn("Failed to show native picker:", e);
               // Fallback if showPicker fails
               createCustomDatePicker();
-            }
-          });
+        }
+      });
         }
       }
     }

@@ -139,13 +139,17 @@ p {
 }
 
 .card-body {
-  padding: 1.5rem;
+  padding: 1.75rem;
+  position: relative;
+  overflow: visible !important;
   background-color: var(--background-tertiary);
 }
 
 /* Form styles */
 .form-group {
   margin-bottom: 1.5rem;
+  position: relative;
+  overflow: visible;
 }
 
 label {
@@ -694,10 +698,14 @@ main {
 
 .card-body {
   padding: 1.75rem;
+  position: relative;
+  overflow: visible !important;
 }
 
 .form-group {
   margin-bottom: 1.5rem;
+  position: relative;
+  overflow: visible;
 }
 
 label {
@@ -772,6 +780,7 @@ textarea:disabled {
 .date-input {
   position: relative;
   cursor: pointer;
+  overflow: visible;
 }
 
 .date-icon {
@@ -834,7 +843,7 @@ input[type="date"]::-webkit-calendar-picker-indicator {
 /* Стили для кастомного календаря */
 .custom-calendar {
   font-size: 0.9rem;
-  z-index: 100;
+  z-index: 9999;
   min-width: 280px;
   max-height: 350px;
   overflow-y: auto;
@@ -1452,7 +1461,7 @@ footer {
     width: 90%;
     max-width: 320px;
     min-width: auto;
-    z-index: 1050;
+    z-index: 9999 !important;
     max-height: 80vh;
   }
   
@@ -1515,4 +1524,13 @@ a:hover {
 .calendar-overlay.active {
   display: block;
   opacity: 1;
+}
+
+/* Обеспечиваем видимость выпадающих календарей */
+.tab-content {
+  overflow: visible !important;
+}
+
+.tab-content > div {
+  overflow: visible !important;
 }
