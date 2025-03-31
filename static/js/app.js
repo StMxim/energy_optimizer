@@ -171,12 +171,8 @@ document.addEventListener('DOMContentLoaded', function() {
         const supportsNativePicker = dateInput.showPicker && typeof dateInput.showPicker === 'function';
         const canUseNativePicker = isDateSupported && supportsNativePicker && !isInIframe;
         
-        console.log("Native date picker available:", canUseNativePicker);
-        
         // Create simple date picker if native not available
         if (!canUseNativePicker) {
-          console.log("Native date picker not available, using fallback");
-          
           // Создаем глобальные переменные для отслеживания календарей
           // Глобальная переменная для хранения всех открытых календарей
           window.openCalendars = window.openCalendars || [];
@@ -282,6 +278,8 @@ document.addEventListener('DOMContentLoaded', function() {
             
             if (!isMobile) {
               calendar.style.width = '280px';
+              // Добавляем класс для анимации только на десктопах
+              calendar.classList.add('desktop-calendar-animation');
             }
             
             // Добавляем календарь в массив перед добавлением в DOM
@@ -458,17 +456,17 @@ document.addEventListener('DOMContentLoaded', function() {
               const inputRect = container.getBoundingClientRect();
               const calendarRect = calendar.getBoundingClientRect();
               
-              // Позиционируем относительно body
+              // Позиционируем относительно body с центрированием
               const bodyRect = document.body.getBoundingClientRect();
-              const top = inputRect.bottom + window.scrollY;
-              const left = inputRect.left + window.scrollX;
+              const top = inputRect.bottom + window.scrollY + 10; // Добавляем отступ 10px
+              const left = inputRect.left + window.scrollX + (inputRect.width / 2) - (calendarRect.width / 2); // Центрируем
               
               // Проверяем, достаточно ли места внизу
               const spaceBelow = window.innerHeight - (inputRect.bottom - bodyRect.top);
               
               if (spaceBelow < calendarRect.height) {
                 // Недостаточно места внизу, показываем календарь сверху
-                calendar.style.top = `${top - inputRect.height - calendarRect.height}px`;
+                calendar.style.top = `${top - inputRect.height - calendarRect.height - 20}px`;
               } else {
                 // Показываем календарь снизу
                 calendar.style.top = `${top}px`;
@@ -483,6 +481,10 @@ document.addEventListener('DOMContentLoaded', function() {
               if (rightEdge > windowWidth) {
                 const overflow = rightEdge - windowWidth;
                 calendar.style.left = `${left - overflow - 10}px`;
+              }
+              
+              if (left < 0) {
+                calendar.style.left = '10px';
               }
             }
           };
@@ -522,18 +524,17 @@ document.addEventListener('DOMContentLoaded', function() {
         } else {
           // Native date picker is available
           iconContainer.addEventListener('click', () => {
-          // Focus on the input
-          dateInput.focus();
-          
-          // Open the date picker
+            // Focus on the input
+            dateInput.focus();
+            
+            // Open the date picker
             try {
-          dateInput.showPicker();
+              dateInput.showPicker();
             } catch (e) {
-              console.warn("Failed to show native picker:", e);
               // Fallback if showPicker fails
               createCustomDatePicker();
-        }
-      });
+            }
+          });
         }
       }
     }
