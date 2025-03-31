@@ -6,10 +6,26 @@ import uvicorn
 from contextlib import asynccontextmanager
 import os
 from pathlib import Path
+from starlette.middleware.base import BaseHTTPMiddleware
+from starlette.responses import Response
 
 from app.api.router import api_router
 from app.core.config import settings
 from app.core.logging_config import logger
+
+# Создаем middleware для добавления специальных заголовков безопасности
+class SecurityHeadersMiddleware(BaseHTTPMiddleware):
+    async def dispatch(self, request: Request, call_next):
+        response = await call_next(request)
+        # Разрешаем date picker в iframe
+        response.headers["Cross-Origin-Embedder-Policy"] = "credentialless"
+        # Разрешаем интеграцию через iframe
+        response.headers["X-Frame-Options"] = "ALLOWALL"
+        # Устанавливаем политику доступа к документу
+        response.headers["Cross-Origin-Opener-Policy"] = "unsafe-none"
+        # Разрешаем выполнение скриптов с других источников
+        response.headers["Content-Security-Policy"] = "frame-ancestors *"
+        return response
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -29,6 +45,9 @@ app = FastAPI(
     redoc_url=f"{settings.API_V1_STR}/redoc",
     lifespan=lifespan
 )
+
+# Add security headers middleware
+app.add_middleware(SecurityHeadersMiddleware)
 
 # Configure CORS
 app.add_middleware(
