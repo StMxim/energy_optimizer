@@ -22,24 +22,29 @@
   --accent: #FFFD9E;
   --accent-rgb: 255, 253, 158;
   
+  /* Data Visualization Colors */
+  --high-profit-color: #9FFFB1;
+  --high-profit-bg: rgba(159, 255, 177, 0.15);
+  --medium-profit-color: var(--accent);
+  --medium-profit-bg: rgba(255, 253, 158, 0.15);
+  --low-profit-color: #FF9F9F;
+  --low-profit-bg: rgba(255, 159, 159, 0.15);
+  
+  --good-price-color: #9FFFB1;
+  --good-price-bg: rgba(159, 255, 177, 0.12);
+  --medium-price-color: var(--accent);
+  --medium-price-bg: rgba(255, 253, 158, 0.12);
+  --poor-price-color: #FF9F9F;
+  --poor-price-bg: rgba(255, 159, 159, 0.12);
+  
   /* State Colors */
   --primary-color: #FFFD9E;
   --primary-rgb: 255, 253, 158;
   --primary-light: rgba(255, 253, 158, 0.2);
   --primary-dark: #E6E38E;
-  
-  /* Semantic Colors - Improved for visibility */
-  --success-color: #4ADE80;
-  --success-light: rgba(74, 222, 128, 0.2);
-  --success-rgb: 74, 222, 128;
-  
-  --warning-color: #FACC15;
-  --warning-light: rgba(250, 204, 21, 0.2);
-  --warning-rgb: 250, 204, 21;
-  
-  --danger-color: #F87171;
-  --danger-light: rgba(248, 113, 113, 0.2);
-  --danger-rgb: 248, 113, 113;
+  --success-color: #34c759;
+  --warning-color: #ffcc00;
+  --danger-color: #ff3b30;
   
   /* Typography */
   --font-family: 'Switzer', 'Inter', sans-serif;
@@ -110,11 +115,10 @@ p {
   border: 1px solid var(--border-color);
   box-shadow: none;
   overflow: hidden;
-  transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+  transition: border-color 0.3s ease;
 }
 
 .card:hover {
-  transform: translateY(-2px);
   border-color: var(--500);
 }
 
@@ -283,66 +287,60 @@ tbody tr.profit:hover {
 }
 
 .high-profit {
-  color: var(--success-color);
+  color: var(--high-profit-color);
   font-weight: 600;
-  background: linear-gradient(to right, var(--success-light), transparent);
+  background: linear-gradient(to right, var(--high-profit-bg), transparent);
   border-radius: 0.25rem;
-  padding: 0.25rem 0.5rem;
-  display: inline-flex;
-  align-items: center;
+  padding: 0.125rem 0.5rem;
+  border-left: 2px solid var(--high-profit-color);
 }
 
 .medium-profit {
-  color: var(--warning-color);
+  color: var(--medium-profit-color);
   font-weight: 600;
-  background: linear-gradient(to right, var(--warning-light), transparent);
+  background: linear-gradient(to right, var(--medium-profit-bg), transparent);
   border-radius: 0.25rem;
-  padding: 0.25rem 0.5rem;
-  display: inline-flex;
-  align-items: center;
+  padding: 0.125rem 0.5rem;
+  border-left: 2px solid var(--medium-profit-color);
 }
 
 .low-profit {
-  color: var(--danger-color);
+  color: var(--low-profit-color);
   font-weight: 600;
-  background: linear-gradient(to right, var(--danger-light), transparent);
+  background: linear-gradient(to right, var(--low-profit-bg), transparent);
   border-radius: 0.25rem;
-  padding: 0.25rem 0.5rem;
-  display: inline-flex;
-  align-items: center;
+  padding: 0.125rem 0.5rem;
+  border-left: 2px solid var(--low-profit-color);
 }
 
 .good-price {
-  color: var(--success-color);
-  background: var(--success-light);
+  color: var(--good-price-color);
+  background: var(--good-price-bg);
   border-radius: 0.25rem;
-  padding: 0.25rem 0.5rem;
-  display: inline-flex;
-  align-items: center;
+  padding: 0.125rem 0.5rem;
+  border-left: 2px solid var(--good-price-color);
 }
 
 .medium-price {
-  color: var(--warning-color);
-  background: var(--warning-light);
+  color: var(--medium-price-color);
+  background: var(--medium-price-bg);
   border-radius: 0.25rem;
-  padding: 0.25rem 0.5rem;
-  display: inline-flex;
-  align-items: center;
+  padding: 0.125rem 0.5rem;
+  border-left: 2px solid var(--medium-price-color);
 }
 
 .high-price,
 .low-price {
-  color: var(--danger-color);
-  background: var(--danger-light);
+  color: var(--poor-price-color);
+  background: var(--poor-price-bg);
   border-radius: 0.25rem;
-  padding: 0.25rem 0.5rem;
-  display: inline-flex;
-  align-items: center;
+  padding: 0.125rem 0.5rem;
+  border-left: 2px solid var(--poor-price-color);
 }
 
 .color-legend {
   margin-top: 1.25rem;
-  padding: 1.5rem;
+  padding: 1.25rem;
   background-color: var(--background-tertiary);
   border-radius: 0.625rem;
   box-shadow: none;
@@ -352,37 +350,35 @@ tbody tr.profit:hover {
 .color-legend h4 {
   margin-top: 0;
   margin-bottom: 1rem;
-  font-size: 1.1rem;
+  font-size: 1rem;
   color: var(--accent);
   font-weight: 600;
-  letter-spacing: 0.01rem;
+  letter-spacing: 0.01em;
 }
 
 .legend-item {
   display: flex;
   align-items: center;
-  margin-bottom: 0.75rem;
-  padding: 0.5rem 0.75rem;
-  border-radius: 0.5rem;
+  margin-bottom: 0.625rem;
+  padding: 0.375rem 0.625rem;
+  border-radius: 0.375rem;
   transition: background-color 0.2s ease;
-  border: 1px solid transparent;
 }
 
 .legend-item:hover {
-  background-color: rgba(255, 255, 255, 0.05);
-  border-color: var(--border-color);
+  background-color: rgba(255, 255, 255, 0.03);
 }
 
 .legend-color {
-  font-size: 1.5rem;
-  margin-right: 0.875rem;
-  line-height: 1;
+  font-size: 1.375rem;
+  margin-right: 0.75rem;
+  color: inherit;
 }
 
 .legend-label {
-  font-size: 0.95rem;
+  font-size: 0.875rem;
   color: var(--text-color);
-  letter-spacing: 0.01rem;
+  font-weight: 400;
 }
 
 @keyframes slideUp {
@@ -675,12 +671,11 @@ main {
   margin-bottom: 1.75rem;
   overflow: hidden;
   border: 1px solid var(--border-color);
-  transition: transform 0.3s, box-shadow 0.3s;
+  transition: border-color 0.3s ease;
 }
 
 .card:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+  border-color: var(--500);
 }
 
 .card-header {
@@ -931,17 +926,14 @@ input[type="date"] {
 
 .alert-success {
   border-left-color: var(--success-color);
-  background-color: rgba(var(--success-rgb), 0.1);
 }
 
 .alert-warning {
   border-left-color: var(--warning-color);
-  background-color: rgba(var(--warning-rgb), 0.1);
 }
 
 .alert-danger {
   border-left-color: var(--danger-color);
-  background-color: rgba(var(--danger-rgb), 0.1);
 }
 
 .alert i {
@@ -1031,7 +1023,7 @@ input[type="date"] {
 }
 
 .high-profit {
-  color: var(--success-color);
+  color: var(--high-profit-color);
 }
 
 footer {
@@ -1425,226 +1417,4 @@ a {
 
 a:hover {
   opacity: 0.72;
-}
-
-/* Добавим цветовую индикацию для строк таблицы */
-.results-table tr.high-profit-row {
-  background-color: rgba(var(--success-rgb), 0.08);
-}
-
-.results-table tr.high-profit-row:hover {
-  background-color: rgba(var(--success-rgb), 0.14);
-}
-
-.results-table tr.medium-profit-row {
-  background-color: rgba(var(--warning-rgb), 0.08);
-}
-
-.results-table tr.medium-profit-row:hover {
-  background-color: rgba(var(--warning-rgb), 0.14);
-}
-
-.results-table tr.low-profit-row {
-  background-color: rgba(var(--danger-rgb), 0.06);
-}
-
-.results-table tr.low-profit-row:hover {
-  background-color: rgba(var(--danger-rgb), 0.12);
-}
-
-/* Стилизуем кружки с цифрами для "How It Works" */
-.step-number {
-  position: absolute;
-  left: -40px;
-  top: 0;
-  width: 36px;
-  height: 36px;
-  background-color: var(--accent);
-  color: var(--900);
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-weight: 600;
-  font-size: 1.1rem;
-  z-index: 1;
-  box-shadow: 0 4px 10px rgba(var(--accent-rgb), 0.3);
-  border: 2px solid rgba(var(--accent-rgb), 0.2);
-}
-
-/* Улучшаем текущие индикаторы для бОльшей заметности */
-.profit-cell.high-profit {
-  font-weight: 700;
-  text-shadow: 0 0 8px rgba(var(--success-rgb), 0.4);
-}
-
-.profit-cell.medium-profit {
-  font-weight: 700;
-  text-shadow: 0 0 8px rgba(var(--warning-rgb), 0.4);
-}
-
-.profit-cell.low-profit {
-  font-weight: 700;
-  text-shadow: 0 0 8px rgba(var(--danger-rgb), 0.4);
-}
-
-/* Обновляем стиль для таблицы с данными по прибыли */
-.profit-after {
-  position: relative;
-  display: inline-flex;
-  align-items: center;
-  justify-content: flex-end;
-  width: 100%;
-}
-
-.profit-after::before {
-  content: '';
-  position: absolute;
-  left: 0;
-  top: 50%;
-  transform: translateY(-50%);
-  height: 4px;
-  background-color: var(--success-light);
-  border-radius: 2px;
-  z-index: 0;
-  opacity: 0.4;
-  transition: all 0.2s ease;
-}
-
-.profit-after.high::before {
-  width: 90%;
-  background-color: var(--success-light);
-}
-
-.profit-after.medium::before {
-  width: 60%;
-  background-color: var(--warning-light);
-}
-
-.profit-after.low::before {
-  width: 30%;
-  background-color: var(--danger-light);
-}
-
-/* Добавляем стили для разделителей дат в таблице */
-.results-table tr.date-separator {
-  height: 1rem;
-  background-color: var(--background-secondary);
-  opacity: 0.5;
-  border-bottom: 1px dashed var(--border-color);
-}
-
-.results-table tr.date-separator td {
-  padding: 0;
-  border: none;
-}
-
-/* Стили для чередования строк в таблице для лучшей читаемости */
-.results-table tr.even-row {
-  background-color: rgba(var(--accent-rgb), 0.02);
-}
-
-.results-table tr.odd-row {
-  background-color: transparent;
-}
-
-/* Улучшаем отображение цен для Market Data */
-.results-table .price-cell.high-profit {
-  font-weight: 700;
-  color: var(--success-color);
-}
-
-.results-table .price-cell.medium-profit {
-  font-weight: 700;
-  color: var(--warning-color);
-}
-
-.results-table .price-cell.low-profit {
-  font-weight: 700;
-  color: var(--danger-color);
-}
-
-/* Стилизуем иконки для зарядки/разрядки */
-.results-table td .fa-battery-quarter {
-  color: var(--success-color);
-  margin-right: 0.25rem;
-}
-
-.results-table td .fa-battery-three-quarters {
-  color: var(--warning-color);
-  margin-right: 0.25rem;
-}
-
-/* Улучшенные стили для рыночных данных */
-.results-table td:first-child {
-  font-weight: 500;
-}
-
-/* Делаем время жирным для лучшей читаемости */
-.results-table td:nth-child(2) {
-  font-weight: 500;
-}
-
-/* Добавляем визуальное выделение для текущей даты */
-.results-table tr.current-date td:first-child {
-  position: relative;
-}
-
-.results-table tr.current-date td:first-child:before {
-  content: '';
-  position: absolute;
-  left: 0;
-  top: 0;
-  height: 100%;
-  width: 3px;
-  background-color: var(--accent);
-}
-
-/* Стили для выделения лучших часов зарядки/разрядки */
-.results-table tr.best-charging-hour {
-  background-color: rgba(var(--success-rgb), 0.12) !important;
-}
-
-.results-table tr.best-charging-hour:hover {
-  background-color: rgba(var(--success-rgb), 0.18) !important;
-}
-
-.results-table tr.best-discharging-hour {
-  background-color: rgba(var(--warning-rgb), 0.12) !important;
-}
-
-.results-table tr.best-discharging-hour:hover {
-  background-color: rgba(var(--warning-rgb), 0.18) !important;
-}
-
-.results-table .text-success {
-  color: var(--success-color) !important;
-  font-size: 1.1rem;
-}
-
-.results-table .text-warning {
-  color: var(--warning-color) !important;
-  font-size: 1.1rem;
-}
-
-/* Улучшаем стиль ячеек с ценами в рыночных данных */
-.results-table .price-cell {
-  text-align: right;
-  font-family: var(--font-family);
-  letter-spacing: 0.02em;
-}
-
-/* Подсветка для текущего дня */
-.results-table tr.current-date {
-  position: relative;
-}
-
-.results-table tr.current-date:before {
-  content: '';
-  position: absolute;
-  left: 0;
-  top: 0;
-  height: 100%;
-  width: 3px;
-  background-color: var(--accent);
 }
