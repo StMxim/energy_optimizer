@@ -440,14 +440,18 @@ document.addEventListener('DOMContentLoaded', function() {
       const endDate = formData.get('end_date');
       const threshold = formData.get('threshold') || 0;
       
-      // Call API for optimization using GET method with query parameters
-      const queryParams = new URLSearchParams({
-        start_date: `${startDate}T00:00:00`,
-        end_date: `${endDate}T23:59:59`,
-        threshold: threshold
+      // Call API for optimization using POST method as defined in backend
+      const response = await fetch(`/api/v1/optimization/optimize`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          start_date: `${startDate}T00:00:00`,
+          end_date: `${endDate}T23:59:59`,
+          threshold: Number.parseFloat(threshold)
+        })
       });
-      
-      const response = await fetch(`/api/v1/optimization/optimize?${queryParams.toString()}`);
       
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));
