@@ -540,6 +540,14 @@ document.addEventListener('DOMContentLoaded', function() {
     showAlert('<i class="fas fa-broom"></i> Results cleared', 'success');
   }
   
+  // Добавляем функцию для проверки, является ли дата текущей
+  function isCurrentDate(dateStr) {
+    const today = new Date();
+    const todayStr = `${today.getDate().toString().padStart(2, '0')}.${(today.getMonth() + 1).toString().padStart(2, '0')}.${today.getFullYear()}`;
+    return formatDisplayDate(dateStr) === todayStr;
+  }
+  
+  // Модифицируем функцию displayMarketData
   function displayMarketData(data, isTestData = false, testDataMessage = '') {
     clearResults();
     
@@ -557,7 +565,7 @@ document.addEventListener('DOMContentLoaded', function() {
       return;
     }
     
-    // Set table headers for market data - современный вид
+    // Set table headers for market data
     const thead = table.querySelector('thead tr');
     thead.innerHTML = `
       <th>Date</th>
@@ -578,27 +586,143 @@ document.addEventListener('DOMContentLoaded', function() {
       return a.hour - b.hour;
     });
     
+    // Find best hours for charging and discharging
+    const dateGroups = new Map();
+    
+    // Group data by date
+    for (const item of sortedData) {
+      const dateKey = formatDisplayDate(item.date);
+      if (!dateGroups.has(dateKey)) {
+        dateGroups.set(dateKey, []);
+      }
+      dateGroups.get(dateKey).push(item);
+    }
+    
+    // Find best hours for each date
+    const bestHours = new Map();
+    
+    for (const [date, hours] of dateGroups) {
+      // Find lowest morning price (best for charging)
+      const morningHours = hours.filter(h => h.hour < 12);
+      if (morningHours.length > 0) {
+        const bestChargingHour = morningHours.reduce((best, current) => 
+          parseFloat(current.price_eur) < parseFloat(best.price_eur) ? current : best, morningHours[0]);
+        
+        // Find highest evening price (best for discharging)
+        const eveningHours = hours.filter(h => h.hour >= 12);
+        if (eveningHours.length > 0) {
+          const bestDischargingHour = eveningHours.reduce((best, current) => 
+            parseFloat(current.price_eur) > parseFloat(best.price_eur) ? current : best, eveningHours[0]);
+          
+          bestHours.set(date, {
+            charge: bestChargingHour,
+            discharge: bestDischargingHour
+          });
+        }
+      }
+    }
+    
     // Create table rows for each data point
     let prevDate = null;
+    let currentDateRows = 0;
     
     for (const item of sortedData) {
       const row = document.createElement('tr');
       
-      // If it's a new date, add some styling
-      const dateClass = prevDate === item.date ? 'same-date' : '';
+      // Добавляем классы для строк в зависимости от цены
+      const priceValue = parseFloat(item.price_eur);
+      // Для утренних часов (0-11) считаем хорошей низкую цену (для зарядки)
+      // Для вечерних часов (12-23) считаем хорошей высокую цену (для разрядки)
+      const isCharge = item.hour < 12;
+      
+      if (isCharge) {
+        // Для зарядки низкая цена - хорошо
+        if (priceValue < 0.10) {
+          row.classList.add('high-profit-row');
+        } else if (priceValue < 0.15) {
+          row.classList.add('medium-profit-row');
+        } else {
+          row.classList.add('low-profit-row');
+        }
+      } else {
+        // Для разрядки высокая цена - хорошо
+        if (priceValue > 0.20) {
+          row.classList.add('high-profit-row');
+        } else if (priceValue > 0.15) {
+          row.classList.add('medium-profit-row');
+        } else {
+          row.classList.add('low-profit-row');
+        }
+      }
+      
+      // Проверяем, является ли это лучшим часом для зарядки/разрядки в этот день
+      const dateKey = formatDisplayDate(item.date);
+      const isBestChargingHour = bestHours.has(dateKey) && 
+                               bestHours.get(dateKey).charge && 
+                               bestHours.get(dateKey).charge.hour === item.hour;
+      
+      const isBestDischargingHour = bestHours.has(dateKey) && 
+                                bestHours.get(dateKey).discharge && 
+                                bestHours.get(dateKey).discharge.hour === item.hour;
+      
+      if (isBestChargingHour) {
+        row.classList.add('best-charging-hour');
+      }
+      
+      if (isBestDischargingHour) {
+        row.classList.add('best-discharging-hour');
+      }
+      
+      // If it's a new date, add visual separator
+      const isNewDate = prevDate !== item.date;
+      if (isNewDate && prevDate !== null) {
+        // Добавляем разделитель между датами
+        const separatorRow = document.createElement('tr');
+        separatorRow.classList.add('date-separator');
+        separatorRow.innerHTML = '<td colspan="4"></td>';
+        tableBody.appendChild(separatorRow);
+        currentDateRows = 0;
+      }
+      
+      // Альтернативное выделение строк одного дня для лучшей читаемости
+      if (currentDateRows % 2 === 0) {
+        row.classList.add('even-row');
+      } else {
+        row.classList.add('odd-row');
+      }
+      
+      // Проверяем, является ли дата текущей
+      if (isCurrentDate(item.date)) {
+        row.classList.add('current-date');
+      }
+      
+      // Обновляем переменные для отслеживания дат
       prevDate = item.date;
+      currentDateRows++;
       
       const dateDisplay = formatDisplayDate(item.date);
       const hourDisplay = `${item.hour}:00`;
       
-      // Calculate price color classes based on value (similar to optimizations)
-      const eurPriceClass = getPriceColorClass(item.price_eur, item.hour < 12); // Treat morning hours as "charge"
+      // Calculate price color classes based on value
+      const eurPriceClass = getPriceColorClass(priceValue, isCharge);
+      
+      // Добавляем икону для обозначения хороших часов для зарядки/разрядки
+      let hourIcon = '';
+      if (isBestChargingHour) {
+        hourIcon = '<i class="fas fa-battery-quarter text-success" title="Best charging hour"></i> ';
+      } else if (isBestDischargingHour) {
+        hourIcon = '<i class="fas fa-battery-three-quarters text-warning" title="Best discharging hour"></i> ';
+      } else if (isCharge && priceValue < 0.10) {
+        hourIcon = '<i class="fas fa-battery-quarter" title="Good charging hour"></i> ';
+      } else if (!isCharge && priceValue > 0.18) {
+        hourIcon = '<i class="fas fa-battery-three-quarters" title="Good discharging hour"></i> ';
+      }
       
       row.innerHTML = `
         <td>${dateDisplay}</td>
-        <td>${hourDisplay}</td>
+        <td>${hourIcon}${hourDisplay}</td>
         <td class="price-cell ${eurPriceClass}">${formatNumber(item.price_eur)}</td>
-        <td class="price-cell">${formatNumber(item.price_ct_kwh)}</td>
+        <td class="price-cell ${eurPriceClass}">${formatNumber(item.price_ct_kwh)}</td>
       `;
       
       tableBody.appendChild(row);
@@ -822,6 +946,15 @@ document.addEventListener('DOMContentLoaded', function() {
       const dischargePriceClass = getPriceColorClass(dischargePrice, false);
       const profitClass = getProfitColorClass(profitAfterLosses);
       
+      // Добавляем класс ряду в зависимости от уровня прибыли
+      if (profitAfterLosses >= 10) {
+        row.classList.add('high-profit-row');
+      } else if (profitAfterLosses >= 5) {
+        row.classList.add('medium-profit-row');
+      } else {
+        row.classList.add('low-profit-row');
+      }
+      
       // Форматируем отображение времени
       const chargeTimeDisplay = chargeHour !== '--' ? `${chargeHour}:00` : '--';
       const dischargeTimeDisplay = dischargeHour !== '--' ? `${dischargeHour}:00` : '--';
@@ -834,7 +967,7 @@ document.addEventListener('DOMContentLoaded', function() {
         <td class="price-cell ${dischargePriceClass}">${formatNumber(dischargePrice)}</td>
         <td>${formatNumber(priceDifference)}</td>
         <td class="profit-cell">${formatCurrency(profit)}</td>
-        <td class="profit-cell ${profitClass}">${formatCurrency(profitAfterLosses)}</td>
+        <td><div class="profit-after ${profitClass}">${formatCurrency(profitAfterLosses)}</div></td>
       `;
       
       tableBody.appendChild(row);
