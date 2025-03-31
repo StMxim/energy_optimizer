@@ -79,18 +79,29 @@ class MarketDataService:
             
             headers = {
                 "Authorization": f"Bearer {token}",
-                "Accept": "*/*"
+                "Accept": "*/*",
+                "User-Agent": settings.USER_AGENT
             }
+            
+            logger.debug(f"Using headers: {headers}")
             
             async with aiohttp.ClientSession() as session:
                 async with session.get(url, headers=headers) as response:
-                    if response.status != 200:
+                    status_code = response.status
+                    logger.debug(f"API response status code: {status_code}")
+                    
+                    if status_code != 200:
                         error_text = await response.text()
-                        logger.error(f"API Error: {response.status}, {error_text}")
-                        raise Exception(f"API returned an error: {response.status}, text: {error_text}")
+                        logger.error(f"API Error: {status_code}, {error_text}")
+                        raise Exception(f"API returned an error: {status_code}, text: {error_text}")
                     
                     csv_content = await response.text()
-                    logger.debug(f"Received API response: first 200 characters: {csv_content[:200]}")
+                    content_length = len(csv_content)
+                    logger.debug(f"Received API response: length {content_length} bytes, first 200 characters: {csv_content[:200]}")
+                    
+                    if content_length < 10:  # Слишком маленький ответ, вероятно пустой
+                        logger.warning(f"API returned very small response (length: {content_length}): {csv_content}")
+                        raise Exception("API returned empty or too small response")
                     
                     return self._parse_csv_response(csv_content)
         except Exception as e:

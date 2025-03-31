@@ -20,6 +20,9 @@ class Settings(BaseSettings):
     # URL внешнего API Netztransparenz для спотовых цен
     MARKET_API_URL: str = os.getenv("MARKET_API_URL", "https://ds.netztransparenz.de/api/v1/data/Spotmarktpreise")
     
+    # User-Agent для запросов к API
+    USER_AGENT: str = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+    
     # Формат даты/времени для URL API (YYYY-MM-DDTHH:MM:SS)
     API_DATETIME_FORMAT: str = "%Y-%m-%dT%H:%M:%S"
     
