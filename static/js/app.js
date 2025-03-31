@@ -216,12 +216,12 @@ document.addEventListener('DOMContentLoaded', function() {
         const targetId = this.getAttribute('href').substring(1);
         document.getElementById(targetId).style.display = 'block';
         
+        // Always clear results when switching tabs
+        clearResults();
+        
         // Special handling for help tab - load help content if needed
         if (targetId === 'help-tab') {
           loadHelpContent();
-        } else {
-          // Clear results when switching to other tabs
-          clearResults();
         }
       });
     }
