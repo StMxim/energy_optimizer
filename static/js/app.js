@@ -221,6 +221,7 @@ document.addEventListener('DOMContentLoaded', function() {
             prevBtn.style.height = '30px';
             prevBtn.style.padding = '0';
             prevBtn.style.backgroundColor = 'var(--700)';
+            prevBtn.style.color = 'var(--primary-color)';
             
             // Month/Year display
             const monthYearDisplay = document.createElement('div');
@@ -235,6 +236,7 @@ document.addEventListener('DOMContentLoaded', function() {
             nextBtn.style.height = '30px';
             nextBtn.style.padding = '0';
             nextBtn.style.backgroundColor = 'var(--700)';
+            nextBtn.style.color = 'var(--primary-color)';
             
             header.appendChild(prevBtn);
             header.appendChild(monthYearDisplay);
@@ -305,6 +307,7 @@ document.addEventListener('DOMContentLoaded', function() {
                   dayElement.style.backgroundColor = 'var(--accent)';
                   dayElement.style.color = 'var(--900)';
                   dayElement.style.fontWeight = 'bold';
+                  dayElement.style.boxShadow = '0 0 0 2px var(--accent)';
                 } else {
                   dayElement.style.backgroundColor = 'var(--800)';
                 }
@@ -341,6 +344,8 @@ document.addEventListener('DOMContentLoaded', function() {
                   // Hide calendar after selection
                   if (calendar.parentNode) {
                     calendar.parentNode.removeChild(calendar);
+                    currentOpenCalendar = null;
+                    calendarOpen = false;
                   }
                   
                   // Trigger change event
@@ -374,35 +379,89 @@ document.addEventListener('DOMContentLoaded', function() {
               renderCalendar(defaultDate.getFullYear(), defaultDate.getMonth());
             });
             
+            // Глобальный флаг для отслеживания состояния календаря
+            let calendarOpen = false;
+            
+            // Функция для закрытия календаря
+            const closeCalendar = () => {
+              if (calendar.parentNode) {
+                calendar.parentNode.removeChild(calendar);
+                calendarOpen = false;
+              }
+            };
+            
             // Close when clicking outside
             document.addEventListener('click', (e) => {
-              if (!calendar.contains(e.target) && e.target !== iconContainer && e.target !== dateInput) {
-                if (calendar.parentNode) {
-                  calendar.parentNode.removeChild(calendar);
-                }
+              if (calendarOpen && !calendar.contains(e.target) && e.target !== iconContainer && e.target !== dateInput) {
+                closeCalendar();
               }
             });
             
             // Position and show calendar
             container.appendChild(calendar);
+            calendarOpen = true;
             
             // Position the calendar relative to the input
             const inputRect = container.getBoundingClientRect();
-            calendar.style.top = `${inputRect.height + 5}px`;
+            const calendarRect = calendar.getBoundingClientRect();
+            
+            // Проверяем, достаточно ли места внизу
+            const spaceBelow = window.innerHeight - inputRect.bottom;
+            
+            if (spaceBelow < calendarRect.height && inputRect.top > calendarRect.height) {
+              // Недостаточно места внизу, показываем календарь сверху
+              calendar.style.top = `-${calendarRect.height + 5}px`;
+            } else {
+              // Показываем календарь снизу
+              calendar.style.top = `${inputRect.height + 5}px`;
+            }
+            
             calendar.style.left = '0';
+            
+            // Обеспечиваем видимость календаря
+            const rightEdge = calendar.getBoundingClientRect().right;
+            const windowWidth = window.innerWidth;
+            
+            if (rightEdge > windowWidth) {
+              const overflow = rightEdge - windowWidth;
+              calendar.style.left = `-${overflow + 10}px`;
+            }
           };
+          
+          // Переменная для отслеживания текущего открытого календаря
+          let currentOpenCalendar = null;
           
           // Show custom date picker when clicking on icon or input
           iconContainer.addEventListener('click', (e) => {
             e.preventDefault();
             e.stopPropagation();
+            
+            // Если календарь уже открыт, закрываем его
+            if (currentOpenCalendar && currentOpenCalendar.parentNode) {
+              currentOpenCalendar.parentNode.removeChild(currentOpenCalendar);
+              currentOpenCalendar = null;
+              return;
+            }
+            
+            // Создаем и открываем календарь
             createCustomDatePicker();
+            currentOpenCalendar = container.querySelector('.custom-calendar');
           });
           
           dateInput.addEventListener('click', (e) => {
             e.preventDefault();
             e.stopPropagation();
+            
+            // Если календарь уже открыт, закрываем его
+            if (currentOpenCalendar && currentOpenCalendar.parentNode) {
+              currentOpenCalendar.parentNode.removeChild(currentOpenCalendar);
+              currentOpenCalendar = null;
+              return;
+            }
+            
+            // Создаем и открываем календарь
             createCustomDatePicker();
+            currentOpenCalendar = container.querySelector('.custom-calendar');
           });
         } else {
           // Native date picker is available

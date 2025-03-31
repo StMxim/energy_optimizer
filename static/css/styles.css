@@ -836,11 +836,23 @@ input[type="date"]::-webkit-calendar-picker-indicator {
   font-size: 0.9rem;
   z-index: 100;
   min-width: 280px;
+  max-height: 350px;
+  overflow-y: auto;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+  position: absolute;
 }
 
 .custom-calendar .btn-small {
   padding: 0.25rem 0.5rem;
   min-width: auto;
+  color: var(--primary-color);
+}
+
+.calendar-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 0.5rem;
+  margin-top: 0.5rem;
 }
 
 .calendar-grid > div {
@@ -848,6 +860,8 @@ input[type="date"]::-webkit-calendar-picker-indicator {
   display: flex;
   align-items: center;
   justify-content: center;
+  cursor: pointer;
+  transition: all 0.15s ease;
 }
 
 .calendar-header {
