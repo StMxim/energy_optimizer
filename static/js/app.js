@@ -664,7 +664,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // Add test data warning if applicable
     if (isTestData) {
       summaryHTML += `
-        <div class="alert alert-warning">
+        <div class="alert alert-warning test-data-notice" style="margin-top: 1.5rem; margin-bottom: 1.5rem;">
           <i class="fas fa-info-circle"></i> ${testDataMessage || 'Using simulated data for demonstration'}
         </div>
       `;
@@ -871,8 +871,8 @@ document.addEventListener('DOMContentLoaded', function() {
     // Add test data warning if applicable
     if (isTestData) {
       summaryHTML += `
-        <div class="test-data-notice">
-          <i class="fas fa-info-circle"></i> API Error: ${testDataMessage || 'Using test data.'}
+        <div class="alert alert-warning test-data-notice" style="margin-top: 1.5rem; margin-bottom: 1.5rem;">
+          <i class="fas fa-info-circle"></i> ${testDataMessage || 'Using simulated data for demonstration'}
         </div>
       `;
     }
