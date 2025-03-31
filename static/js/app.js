@@ -216,8 +216,13 @@ document.addEventListener('DOMContentLoaded', function() {
         const targetId = this.getAttribute('href').substring(1);
         document.getElementById(targetId).style.display = 'block';
         
-        // Clear results when switching tabs
-        clearResults();
+        // Special handling for help tab - load help content if needed
+        if (targetId === 'help-tab') {
+          loadHelpContent();
+        } else {
+          // Clear results when switching to other tabs
+          clearResults();
+        }
       });
     }
     
@@ -250,9 +255,104 @@ document.addEventListener('DOMContentLoaded', function() {
           if (correspondingTab) {
             correspondingTab.click();
           }
+        }
+      });
+    }
+  }
+  
+  // Function to load help content from help.html
+  async function loadHelpContent() {
+    const helpContentContainer = document.getElementById('help-content');
+    
+    // Show loading indicator
+    helpContentContainer.innerHTML = `
+      <div class="loading">
+        <i class="fas fa-spinner"></i>
+        <p>Loading help content...</p>
+      </div>
+    `;
+    
+    try {
+      // Fetch the help.html content
+      const response = await fetch('/static/help.html');
+      if (!response.ok) {
+        throw new Error(`Failed to load help content: ${response.status} ${response.statusText}`);
+      }
+      
+      const html = await response.text();
+      
+      // Create a temporary element to parse the HTML
+      const tempDiv = document.createElement('div');
+      tempDiv.innerHTML = html;
+      
+      // Extract the main content (we want to skip the header, navigation, etc.)
+      // This extracts content from the main section of help.html
+      let helpContent = '';
+      const mainElement = tempDiv.querySelector('main');
+      
+      if (mainElement) {
+        helpContent = mainElement.innerHTML;
+      } else {
+        // Fallback to extract content between <body> and before <footer>
+        const bodyContent = tempDiv.querySelector('body');
+        if (bodyContent) {
+          helpContent = bodyContent.innerHTML;
           
-          // Clear results when switching main tabs
-          clearResults();
+          // Remove header if exists
+          const headerContent = tempDiv.querySelector('header');
+          if (headerContent) {
+            helpContent = helpContent.replace(headerContent.outerHTML, '');
+          }
+          
+          // Remove footer if exists
+          const footerContent = tempDiv.querySelector('footer');
+          if (footerContent) {
+            helpContent = helpContent.replace(footerContent.outerHTML, '');
+          }
+          
+          // Remove scripts
+          const scripts = tempDiv.querySelectorAll('script');
+          scripts.forEach(script => {
+            helpContent = helpContent.replace(script.outerHTML, '');
+          });
+        }
+      }
+      
+      // Set the help content
+      helpContentContainer.innerHTML = helpContent;
+      
+      // Initialize any help page specific scripts or behaviors
+      initHelpPageBehavior();
+      
+    } catch (error) {
+      console.error('Error loading help content:', error);
+      helpContentContainer.innerHTML = `
+        <div class="alert alert-error">
+          <i class="fas fa-exclamation-circle"></i>
+          <p>Error loading help content: ${error.message}</p>
+          <button class="btn btn-outlined" onclick="location.href='/static/help.html'">
+            Open Help in New Page
+          </button>
+        </div>
+      `;
+    }
+  }
+  
+  // Initialize help page behavior (accordion, etc.)
+  function initHelpPageBehavior() {
+    // Initialize accordions on the help page
+    const accordionHeaders = document.querySelectorAll('#help-tab .accordion-header');
+    
+    for (const header of accordionHeaders) {
+      header.addEventListener('click', function() {
+        this.classList.toggle('active');
+        
+        const content = this.nextElementSibling;
+        
+        if (content.style.maxHeight) {
+          content.style.maxHeight = null;
+        } else {
+          content.style.maxHeight = content.scrollHeight + 'px';
         }
       });
     }
