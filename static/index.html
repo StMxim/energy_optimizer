@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Energy Market Optimizer</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/css/styles.css">
+</head>
+<body>
+    <!-- Оверлей для мобильного меню -->
+    <div class="overlay" aria-hidden="true"></div>
+    
+    <header>
+        <div class="container">
+            <a href="/" class="logo">
+                <i class="fas fa-bolt"></i>
+                <span>Energy Market Optimizer</span>
+            </a>
+            <nav>
+                <ul>
+                    <li><a href="#optimization-tab" class="active" data-tab="optimization"><i class="fas fa-chart-line"></i> Optimization</a></li>
+                    <li><a href="#market-data-tab" data-tab="market-data"><i class="fas fa-database"></i> Market Data</a></li>
+                    <li><a href="/static/help.html" data-tab="help"><i class="fas fa-circle-info"></i> Help</a></li>
+                </ul>
+            </nav>
+            <!-- Бургер-меню для мобильных устройств -->
+            <button type="button" class="burger-menu" aria-label="Toggle menu" aria-expanded="false" aria-controls="mobile-nav">
+                <span class="burger-line"></span>
+                <span class="burger-line"></span>
+                <span class="burger-line"></span>
+            </button>
+        </div>
+    </header>
+
+    <main>
+        <div class="container">
+            <div id="alert-container"></div>
+
+            <div class="tab-container">
+                <ul class="tabs">
+                    <li><a href="#optimization-tab" class="active"><i class="fas fa-bolt"></i> Optimization Cycles</a></li>
+                    <li><a href="#upload-tab"><i class="fas fa-file-upload"></i> Upload CSV</a></li>
+                    <li><a href="#market-data-tab"><i class="fas fa-chart-line"></i> Market Data</a></li>
+                </ul>
+            </div>
+
+            <!-- Optimization tab -->
+            <div id="optimization-tab" class="tab-content">
+                <div class="card">
+                    <div class="card-header">
+                        <h2><i class="fas fa-bolt"></i> Charge/Discharge Cycle Optimization</h2>
+                    </div>
+                    <div class="card-body">
+                        <form id="optimization-form">
+                            <div class="date-range">
+                                <div class="form-group">
+                                    <label for="opt-start-date">Start Date:</label>
+                                    <div class="date-input-wrapper">
+                                        <input type="date" id="opt-start-date" name="start_date" required>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="opt-end-date">End Date:</label>
+                                    <div class="date-input-wrapper">
+                                        <input type="date" id="opt-end-date" name="end_date" required>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="threshold">Minimum Profit Threshold (EUR):</label>
+                                <input type="number" id="threshold" name="threshold" min="0" step="0.01" value="0.5">
+                                <small>The optimizer will only show cycles with a profit above the specified threshold</small>
+                            </div>
+                            <div class="actions">
+                                <button type="submit" class="btn">
+                                    <i class="fas fa-play"></i> Optimize
+                                </button>
+                                <button type="button" id="download-csv" class="btn btn-secondary" style="display: none;">
+                                    <i class="fas fa-download"></i> Download Results (CSV)
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <!-- CSV upload tab -->
+            <div id="upload-tab" class="tab-content" style="display: none;">
+                <div class="card">
+                    <div class="card-header">
+                        <h2><i class="fas fa-file-upload"></i> Upload Market Data CSV</h2>
+                    </div>
+                    <div class="card-body">
+                        <form id="csv-upload-form" enctype="multipart/form-data">
+                            <div class="form-group">
+                                <label for="csv-file">Select CSV file:</label>
+                                <input type="file" id="csv-file" name="file" accept=".csv" required>
+                                <small>CSV file must contain columns: Datum, von, Zeitzone von, bis, Zeitzone bis, Spotmarktpreis in ct/kWh</small>
+                            </div>
+                            <div class="form-group">
+                                <label for="csv-threshold">Minimum Profit Threshold (EUR):</label>
+                                <input type="number" id="csv-threshold" name="threshold" min="0" step="0.01" value="0.5">
+                            </div>
+                            <div class="actions">
+                                <button type="submit" class="btn">
+                                    <i class="fas fa-file-import"></i> Process CSV
+                                </button>
+                                <button type="button" class="btn btn-outlined" onclick="document.getElementById('csv-file').value = ''">
+                                    <i class="fas fa-times"></i> Clear
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Market data tab -->
+            <div id="market-data-tab" class="tab-content" style="display: none;">
+                <div class="card">
+                    <div class="card-header">
+                        <h2><i class="fas fa-database"></i> Retrieve Market Data</h2>
+                    </div>
+                    <div class="card-body">
+                        <form id="market-data-form">
+                            <div class="date-range">
+                                <div class="form-group">
+                                    <label for="data-start-date">Start Date:</label>
+                                    <div class="date-input-wrapper">
+                                        <input type="date" id="data-start-date" name="start_date" required>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="data-end-date">End Date:</label>
+                                    <div class="date-input-wrapper">
+                                        <input type="date" id="data-end-date" name="end_date" required>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="actions">
+                                <button type="submit" class="btn">
+                                    <i class="fas fa-database"></i> Get Data
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Loading indicator -->
+            <div id="loading" class="loading">
+                <i class="fas fa-spinner"></i>
+                <p>Loading data...</p>
+            </div>
+
+            <!-- Results section -->
+            <div id="results-container">
+                <div id="results-summary" class="result-summary" style="display: none;"></div>
+                <div class="card">
+                    <div class="card-header">
+                        <div class="header-with-actions">
+                            <h2><i class="fas fa-table"></i> Results</h2>
+                            <button id="clear-results-btn" class="btn btn-sm btn-outlined" style="display: none;">
+                                <i class="fas fa-trash-alt"></i> Clear Results
+                            </button>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table id="results-table" class="results-table">
+                                <thead>
+                                    <tr>
+                                        <!-- Headers will be added dynamically via JavaScript -->
+                                    </tr>
+                                </thead>
+                                <tbody id="results-table-body">
+                                    <!-- Data will be added dynamically via JavaScript -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <div class="container">
+            <p>&copy; All Rights Reserved By Maxim St</p>
+        </div>
+    </footer>
+
+    <script src="/static/js/app.js"></script>
+</body>
+</html> 

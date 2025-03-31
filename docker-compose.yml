@@ -1,0 +1,16 @@
+version: '3.8'
+
+services:
+  api:
+    build: .
+    container_name: energy-optimizer-api
+    ports:
+      - "8000:8000"
+    volumes:
+      - .:/app
+    environment:
+      - CLIENT_ID=${CLIENT_ID}
+      - CLIENT_SECRET=${CLIENT_SECRET}
+      - MARKET_API_URL=${MARKET_API_URL}
+      - LOG_LEVEL=INFO
+    restart: unless-stopped

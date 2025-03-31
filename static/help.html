@@ -1,0 +1,757 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Help - Energy Market Optimizer</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="/static/css/styles.css">
+    <style>
+        /* General Help Page Styles */
+        .help-container {
+            max-width: 1440px;
+            margin: 0 auto;
+        }
+
+        .help-intro {
+            padding: 20px 30px;
+            margin-bottom: 30px;
+            background: linear-gradient(135deg, rgba(var(--primary-rgb), 0.1), rgba(var(--primary-rgb), 0.05));
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            border-left: 4px solid var(--primary-color);
+        }
+
+        .help-intro-icon {
+            font-size: 2.5rem;
+            color: var(--primary-color);
+            padding: 15px;
+            background-color: rgba(var(--primary-rgb), 0.1);
+            border-radius: 50%;
+            width: 80px;
+            height: 80px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .help-features-title {
+            margin-bottom: 1rem;
+            font-size: 1.5rem;
+            color: var(--text-color);
+            text-align: center;
+            font-weight: bold;
+        }
+
+        .help-intro-content p {
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        /* Accordion Styles */
+        .accordion {
+            margin-bottom: 30px;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        }
+
+        .accordion-header {
+            background-color: var(--background-secondary);
+            padding: 18px 24px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid var(--border-color);
+            transition: all 0.3s ease;
+        }
+
+        .accordion-header:hover {
+            background-color: rgba(var(--primary-rgb), 0.05);
+        }
+
+        .accordion-header.active {
+            background-color: rgba(var(--primary-rgb), 0.1);
+            border-bottom: none;
+        }
+
+        .accordion-header h3 {
+            margin: 0;
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--text-color);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .accordion-header .icon {
+            font-size: 1.1rem;
+            color: var(--primary-color);
+            width: 24px;
+            height: 24px;
+            text-align: center;
+            line-height: 24px;
+        }
+
+        .accordion-toggle {
+            font-size: 1rem;
+            color: var(--text-secondary);
+            transition: transform 0.3s ease;
+        }
+
+        .accordion-header.active .accordion-toggle {
+            transform: rotate(180deg);
+        }
+
+        .accordion-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease;
+            background-color: var(--background-primary);
+        }
+
+        .accordion-body {
+            padding: 20px 24px 24px 60px;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        /* Feature Cards */
+        .feature-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .feature-card {
+            background-color: var(--background-primary);
+            border-radius: 10px;
+            padding: 24px;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+            border: 1px solid var(--border-color);
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .feature-icon {
+            font-size: 1.5rem;
+            color: var(--primary-color);
+            margin-bottom: 16px;
+            background-color: rgba(var(--primary-rgb), 0.1);
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .feature-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 12px;
+            color: var(--text-color);
+        }
+
+        .feature-description {
+            color: var(--text-secondary);
+            line-height: 1.5;
+        }
+
+        /* Step by Step Guide */
+        .step-guide {
+            margin-bottom: 30px;
+        }
+
+        .step-guide h3 {
+            font-size: 1.2rem;
+            margin-bottom: 20px;
+            color: var(--text-color);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .step-guide h3 i {
+            color: var(--primary-color);
+        }
+
+        .steps {
+            position: relative;
+            padding-left: 40px;
+            margin-bottom: 24px;
+        }
+
+        .steps::before {
+            content: '';
+            position: absolute;
+            left: 15px;
+            top: 0;
+            height: 100%;
+            width: 2px;
+            background-color: rgba(var(--primary-rgb), 0.2);
+        }
+
+        .step {
+            position: relative;
+            margin-bottom: 25px;
+            padding-bottom: 10px;
+        }
+
+        .step:last-child {
+            margin-bottom: 0;
+        }
+
+        .step-number {
+            position: absolute;
+            left: -40px;
+            top: 0;
+            width: 30px;
+            height: 30px;
+            background-color: var(--primary-color);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            z-index: 1;
+        }
+
+        .step-title {
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: var(--text-color);
+        }
+
+        .step-description {
+            color: var(--text-secondary);
+            line-height: 1.5;
+        }
+
+        /* Improved List Styles */
+        .accordion-body ul,
+        .accordion-body ol {
+            padding-left: 24px;
+            margin: 16px 0;
+        }
+
+        .accordion-body ul li,
+        .accordion-body ol li {
+            margin-bottom: 10px;
+            line-height: 1.5;
+            position: relative;
+        }
+
+        .accordion-body ul li::before {
+            content: '';
+            position: absolute;
+            left: -18px;
+            top: 8px;
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background-color: var(--primary-color);
+        }
+
+        .accordion-body p {
+            margin-bottom: 16px;
+        }
+
+        /* Code Examples */
+        .code-block {
+            background-color: var(--background-tertiary);
+            border-radius: 8px;
+            padding: 16px;
+            font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+            overflow-x: auto;
+            font-size: 0.9rem;
+            color: var(--text-color);
+            border: 1px solid var(--border-color);
+            margin: 16px 0;
+        }
+
+        .code-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 8px 16px;
+            background-color: rgba(0, 0, 0, 0.05);
+            border-radius: 8px 8px 0 0;
+            border-bottom: 1px solid var(--border-color);
+            margin: -16px -16px 16px -16px;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .code-title {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+        }
+
+        /* Back to Top Button */
+        .back-to-top {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background-color: var(--primary-color);
+            color: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            opacity: 0;
+            transition: opacity 0.3s ease, transform 0.3s ease;
+            transform: translateY(20px);
+            z-index: 999;
+        }
+
+        .back-to-top.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .back-to-top:hover {
+            transform: translateY(-5px);
+        }
+
+        /* Responsive Adjustments */
+        @media (max-width: 768px) {
+            .help-intro {
+                flex-direction: column;
+                text-align: center;
+                padding: 20px;
+            }
+
+            .accordion-body {
+                padding: 20px;
+            }
+
+            .feature-cards {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Оверлей для мобильного меню -->
+    <div class="overlay"></div>
+
+    <header>
+        <div class="container">
+            <a href="/" class="logo">
+                <i class="fas fa-bolt"></i>
+                <span>Energy Market Optimizer</span>
+            </a>
+            <nav>
+                <ul>
+                    <li><a href="/#optimization-tab" data-tab="optimization"><i class="fas fa-chart-line"></i>
+                            Optimization</a></li>
+                    <li><a href="/#market-data-tab" data-tab="market-data"><i class="fas fa-database"></i> Market
+                            Data</a></li>
+                    <li><a href="/static/help.html" class="active" data-tab="help"><i class="fas fa-circle-info"></i>
+                            Help</a></li>
+                </ul>
+            </nav>
+            <!-- Бургер-меню для мобильных устройств -->
+            <div class="burger-menu">
+                <span class="burger-line"></span>
+                <span class="burger-line"></span>
+                <span class="burger-line"></span>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <div class="container help-container">
+            <!-- Introduction Section -->
+            <div class="help-intro">
+                <div class="help-intro-icon">
+                    <i class="fas fa-lightbulb"></i>
+                </div>
+                <div class="help-intro-content">
+                    <h2>Energy Market Optimizer</h2>
+                    <p>A powerful tool designed to help you optimize battery charging and discharging schedules based on
+                        electricity market prices. Maximize your profits by utilizing price differences in the
+                        electricity market throughout the day.</p>
+                </div>
+            </div>
+
+            <!-- Key Features -->
+            <h2 class="help-features-title">Key Features</h2>
+            <div class="feature-cards">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-chart-line"></i>
+                    </div>
+                    <h3 class="feature-title">Market Data Analysis</h3>
+                    <p class="feature-description">Access and analyze real-time electricity market price data to make
+                        informed decisions about energy usage patterns.</p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-bolt"></i>
+                    </div>
+                    <h3 class="feature-title">Cycle Optimization</h3>
+                    <p class="feature-description">Automatically find the most profitable charging and discharging
+                        cycles to maximize your return on investment.</p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-file-upload"></i>
+                    </div>
+                    <h3 class="feature-title">CSV Upload</h3>
+                    <p class="feature-description">Import your own historical market data in CSV format for custom
+                        analysis and optimization strategies.</p>
+                </div>
+            </div>
+
+            <!-- Main Accordion Sections -->
+            <div class="accordion">
+                <div class="accordion-header" id="accordion-1">
+                    <h3><i class="fas fa-info-circle icon"></i>About the Application</h3>
+                    <i class="fas fa-chevron-down accordion-toggle"></i>
+                </div>
+                <div class="accordion-content" id="accordion-content-1">
+                    <div class="accordion-body">
+                        <p>The Energy Market Optimizer is a sophisticated tool designed for energy companies, battery
+                            system owners, and energy traders who want to maximize profits through strategic battery
+                            usage.</p>
+                        <p>By analyzing electricity market price data, our application helps you identify the optimal
+                            times to:</p>
+                        <ul>
+                            <li>Charge your batteries when electricity prices are low</li>
+                            <li>Discharge and sell energy back to the grid when prices are high</li>
+                        </ul>
+                        <p>The application calculates potential profits based on realistic battery efficiency factors
+                            and presents results in easy-to-understand formats that help inform your energy management
+                            decisions.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="accordion">
+                <div class="accordion-header" id="accordion-2">
+                    <h3><i class="fas fa-cogs icon"></i>How It Works</h3>
+                    <i class="fas fa-chevron-down accordion-toggle"></i>
+                </div>
+                <div class="accordion-content" id="accordion-content-2">
+                    <div class="accordion-body">
+                        <p>The Energy Market Optimizer follows a systematic approach to identify profitable
+                            charge-discharge cycles:</p>
+
+                        <div class="step-guide">
+                            <div class="steps">
+                                <div class="step">
+                                    <div class="step-number">1</div>
+                                    <div class="step-title">Data Collection</div>
+                                    <div class="step-description">The system retrieves hourly electricity price data for
+                                        your selected time period, either from our integrated API or from your uploaded
+                                        CSV file.</div>
+                                </div>
+
+                                <div class="step">
+                                    <div class="step-number">2</div>
+                                    <div class="step-title">Pattern Analysis</div>
+                                    <div class="step-description">Our algorithm analyzes the price patterns for each
+                                        day, identifying periods with significant price differences.</div>
+                                </div>
+
+                                <div class="step">
+                                    <div class="step-number">3</div>
+                                    <div class="step-title">Cycle Identification</div>
+                                    <div class="step-description">For each day, the system finds the optimal charging
+                                        period (lowest price) and discharging period (highest price).</div>
+                                </div>
+
+                                <div class="step">
+                                    <div class="step-number">4</div>
+                                    <div class="step-title">Profit Calculation</div>
+                                    <div class="step-description">Taking into account standard battery efficiency (90%),
+                                        the system calculates the potential profit for each cycle.</div>
+                                </div>
+
+                                <div class="step">
+                                    <div class="step-number">5</div>
+                                    <div class="step-title">Results Presentation</div>
+                                    <div class="step-description">Results are presented in a clear, sortable table with
+                                        color coding to highlight the most profitable opportunities.</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="accordion">
+                <div class="accordion-header" id="accordion-3">
+                    <h3><i class="fas fa-bolt icon"></i>Optimization Cycles Tab</h3>
+                    <i class="fas fa-chevron-down accordion-toggle"></i>
+                </div>
+                <div class="accordion-content" id="accordion-content-3">
+                    <div class="accordion-body">
+                        <p>The Optimization Cycles tab is your primary interface for discovering profitable battery
+                            operation cycles. Here's how to use it:</p>
+
+                        <div class="step-guide">
+                            <div class="steps">
+                                <div class="step">
+                                    <div class="step-number">1</div>
+                                    <div class="step-title">Set Your Date Range</div>
+                                    <div class="step-description">Select the start and end dates for your analysis. This
+                                        determines the period over which the system will look for profitable cycles.
+                                    </div>
+                                </div>
+
+                                <div class="step">
+                                    <div class="step-number">2</div>
+                                    <div class="step-title">Define Profit Threshold</div>
+                                    <div class="step-description">Enter your minimum acceptable profit threshold in EUR.
+                                        The system will only display cycles that exceed this value, helping you focus on
+                                        the most worthwhile opportunities.</div>
+                                </div>
+
+                                <div class="step">
+                                    <div class="step-number">3</div>
+                                    <div class="step-title">Run the Optimization</div>
+                                    <div class="step-description">Click the "Optimize" button to start the analysis. The
+                                        system will process the market data and identify the most profitable cycles.
+                                    </div>
+                                </div>
+
+                                <div class="step">
+                                    <div class="step-number">4</div>
+                                    <div class="step-title">Review Results</div>
+                                    <div class="step-description">Examine the results table showing each profitable
+                                        cycle, including dates, charging and discharging times, price points, and
+                                        expected profits.</div>
+                                </div>
+
+                                <div class="step">
+                                    <div class="step-number">5</div>
+                                    <div class="step-title">Export Data (Optional)</div>
+                                    <div class="step-description">Use the "Download Results (CSV)" button to export your
+                                        findings for further analysis or record keeping.</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="accordion">
+                <div class="accordion-header" id="accordion-4">
+                    <h3><i class="fas fa-file-upload icon"></i>Upload CSV Tab</h3>
+                    <i class="fas fa-chevron-down accordion-toggle"></i>
+                </div>
+                <div class="accordion-content" id="accordion-content-4">
+                    <div class="accordion-body">
+                        <p>The Upload CSV tab allows you to use your own historical market data for optimization. This
+                            is particularly useful if you want to analyze specific scenarios or use data from different
+                            market sources.</p>
+
+                        <p>To use this feature:</p>
+
+                        <div class="step-guide">
+                            <div class="steps">
+                                <div class="step">
+                                    <div class="step-number">1</div>
+                                    <div class="step-title">Prepare Your CSV File</div>
+                                    <div class="step-description">Ensure your CSV file follows the required format with
+                                        all necessary columns.</div>
+                                </div>
+
+                                <div class="step">
+                                    <div class="step-number">2</div>
+                                    <div class="step-title">Upload Your File</div>
+                                    <div class="step-description">Click the file selection area or the "Browse" button
+                                        to locate and select your CSV file.</div>
+                                </div>
+
+                                <div class="step">
+                                    <div class="step-number">3</div>
+                                    <div class="step-title">Set Profit Threshold</div>
+                                    <div class="step-description">Specify your minimum profit threshold, just as in the
+                                        Optimization Cycles tab.</div>
+                                </div>
+
+                                <div class="step">
+                                    <div class="step-number">4</div>
+                                    <div class="step-title">Process the Data</div>
+                                    <div class="step-description">Click "Process CSV" to analyze your data and generate
+                                        optimization results.</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <p>The CSV file must follow this specific format:</p>
+
+                        <div class="code-block">
+                            <div class="code-header">
+                                <span class="code-title">Required CSV Format</span>
+                            </div>
+                            Datum;von;Zeitzone von;bis;Zeitzone bis;Spotmarktpreis in ct/kWh
+                        </div>
+
+                        <p>Here's an example of valid CSV content:</p>
+
+                        <div class="code-block">
+                            <div class="code-header">
+                                <span class="code-title">Example CSV Content</span>
+                            </div>
+                            Datum;von;Zeitzone von;bis;Zeitzone bis;Spotmarktpreis in ct/kWh<br>
+                            01.01.2023;0;CET;1;CET;15,35<br>
+                            01.01.2023;1;CET;2;CET;14,21<br>
+                            01.01.2023;2;CET;3;CET;12,85<br>
+                            01.01.2023;3;CET;4;CET;11,56
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="accordion">
+                <div class="accordion-header" id="accordion-5">
+                    <h3><i class="fas fa-database icon"></i>Market Data Tab</h3>
+                    <i class="fas fa-chevron-down accordion-toggle"></i>
+                </div>
+                <div class="accordion-content" id="accordion-content-5">
+                    <div class="accordion-body">
+                        <p>The Market Data tab provides access to electricity price information from the spot market.
+                            This feature allows you to view and analyze price trends before running optimization
+                            algorithms.</p>
+
+                        <div class="step-guide">
+                            <div class="steps">
+                                <div class="step">
+                                    <div class="step-number">1</div>
+                                    <div class="step-title">Select Time Period</div>
+                                    <div class="step-description">Choose the start and end dates for which you want to
+                                        view market data.</div>
+                                </div>
+
+                                <div class="step">
+                                    <div class="step-number">2</div>
+                                    <div class="step-title">Retrieve Data</div>
+                                    <div class="step-description">Click the "Get Data" button to fetch electricity price
+                                        information for the selected period.</div>
+                                </div>
+
+                                <div class="step">
+                                    <div class="step-number">3</div>
+                                    <div class="step-title">Analyze Results</div>
+                                    <div class="step-description">Review the hourly price data presented in the table,
+                                        along with statistical summary information.</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <p>The system will display:</p>
+                        <ul>
+                            <li>Hourly electricity prices in both EUR/kWh and ct/kWh</li>
+                            <li>Date and time information for each price point</li>
+                            <li>Summary statistics including minimum, maximum, and average prices</li>
+                            <li>Total records retrieved for the specified period</li>
+                        </ul>
+
+                        <p>This data helps you understand market trends and identify potential periods for profitable
+                            battery operation.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Back to top button -->
+        <div class="back-to-top" id="backToTop">
+            <i class="fas fa-arrow-up"></i>
+        </div>
+    </main>
+
+    <footer>
+        <div class="container">
+            <p>&copy; All Rights Reserved By Maxim St</p>
+        </div>
+    </footer>
+
+    <script src="/static/js/app.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // Accordion functionality
+            const accordionHeaders = document.querySelectorAll('.accordion-header');
+
+            accordionHeaders.forEach(header => {
+                header.addEventListener('click', function () {
+                    // Toggle active class
+                    this.classList.toggle('active');
+
+                    // Get the associated content panel
+                    const contentId = this.id.replace('accordion-', 'accordion-content-');
+                    const content = document.getElementById(contentId);
+
+                    // Toggle content visibility
+                    if (this.classList.contains('active')) {
+                        content.style.maxHeight = content.scrollHeight + 'px';
+                    } else {
+                        content.style.maxHeight = '0';
+                    }
+
+                    // Close other accordions
+                    accordionHeaders.forEach(otherHeader => {
+                        if (otherHeader !== this) {
+                            otherHeader.classList.remove('active');
+                            const otherId = otherHeader.id.replace('accordion-', 'accordion-content-');
+                            const otherContent = document.getElementById(otherId);
+                            if (otherContent) {
+                                otherContent.style.maxHeight = '0';
+                            }
+                        }
+                    });
+                });
+            });
+
+            // Back to top button functionality
+            const backToTopButton = document.getElementById('backToTop');
+
+            window.addEventListener('scroll', function () {
+                if (window.pageYOffset > 300) {
+                    backToTopButton.classList.add('visible');
+                } else {
+                    backToTopButton.classList.remove('visible');
+                }
+            });
+
+            backToTopButton.addEventListener('click', function () {
+                window.scrollTo({
+                    top: 0,
+                    behavior: 'smooth'
+                });
+            });
+
+            // Open first accordion by default
+            if (accordionHeaders.length > 0) {
+                accordionHeaders[0].click();
+            }
+        });
+    </script>
+</body>
+
+</html>
