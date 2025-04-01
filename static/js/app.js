@@ -194,7 +194,7 @@ document.addEventListener('DOMContentLoaded', function() {
         
         // Click handler для выбора даты
         const handleDateSelect = (e, year, month, day, formatDate) => {
-          e.preventDefault();
+        e.preventDefault();
           e.stopPropagation();
           
           const selectedDate = new Date(year, month, day);
@@ -786,17 +786,13 @@ document.addEventListener('DOMContentLoaded', function() {
       const endDate = formData.get('end_date');
       const threshold = formData.get('threshold') || 0;
       
-      // Call API for optimization using POST method as defined in backend
-      const response = await fetch(`/api/v1/optimization/optimize`, {
+      // Изменено: используем GET-параметры вместо тела JSON,
+      // чтобы согласовать с бэкендом, который использует Query-параметры
+      const response = await fetch(`/api/v1/optimization/optimize?start_date=${startDate}T00:00:00&end_date=${endDate}T23:59:59&threshold=${threshold}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          start_date: `${startDate}T00:00:00`,
-          end_date: `${endDate}T23:59:59`,
-          threshold: Number.parseFloat(threshold)
-        })
+        }
       });
       
       if (!response.ok) {

@@ -133,4 +133,16 @@ cython_debug/
 
 # Logs
 logs/
-*.log 
+*.log
+
+# OS specific files
+.DS_Store
+Thumbs.db
+
+# Custom project directories
+landing/
+
+# IDE files
+.idea/
+*.swp
+*.swo 
